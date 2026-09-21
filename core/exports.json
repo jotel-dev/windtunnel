@@ -1,0 +1,1811 @@
+{
+  "AccountsType": {
+    "type": "object",
+    "details": [
+      "TransferHookBase",
+      "TransferHookBaseReferral"
+    ]
+  },
+  "ActivationType": {
+    "type": "object",
+    "details": [
+      "0",
+      "1",
+      "Slot",
+      "Timestamp"
+    ]
+  },
+  "BASE_ADDRESS": {
+    "type": "object",
+    "details": [
+      "_bn"
+    ]
+  },
+  "BIN_STEP_BPS_DEFAULT": {
+    "type": "number",
+    "details": 1
+  },
+  "BIN_STEP_BPS_U128_DEFAULT": {
+    "type": "object",
+    "details": [
+      "negative",
+      "words",
+      "length",
+      "red"
+    ]
+  },
+  "BaseFeeMode": {
+    "type": "object",
+    "details": [
+      "0",
+      "1",
+      "2",
+      "FeeSchedulerLinear",
+      "FeeSchedulerExponential",
+      "RateLimiter"
+    ]
+  },
+  "CollectFeeMode": {
+    "type": "object",
+    "details": [
+      "0",
+      "1",
+      "QuoteToken",
+      "OutputToken"
+    ]
+  },
+  "CreatorService": {
+    "type": "class",
+    "details": {
+      "staticMethods": [],
+      "prototypeMethods": [
+        "getPoolConfigForNewPool",
+        "createPoolMetadata",
+        "createPool",
+        "createPoolWithTransferHook",
+        "createPoolWithFirstBuy",
+        "createPoolWithFirstBuyWithTransferHook",
+        "createPoolWithPartnerAndCreatorFirstBuy",
+        "createPoolWithPartnerAndCreatorFirstBuyWithTransferHook",
+        "claimCreatorTradingFee",
+        "claimCreatorTradingFeeToReceiver",
+        "claimCreatorTradingFee2",
+        "creatorWithdrawSurplus",
+        "transferPoolCreator",
+        "creatorWithdrawMigrationFee"
+      ]
+    }
+  },
+  "DAMM_V1_MIGRATION_FEE_ADDRESS": {
+    "type": "object",
+    "details": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4",
+      "5"
+    ]
+  },
+  "DAMM_V1_PROGRAM_ID": {
+    "type": "object",
+    "details": [
+      "_bn"
+    ]
+  },
+  "DAMM_V2_MIGRATION_FEE_ADDRESS": {
+    "type": "object",
+    "details": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4",
+      "5",
+      "6"
+    ]
+  },
+  "DAMM_V2_PROGRAM_ID": {
+    "type": "object",
+    "details": [
+      "_bn"
+    ]
+  },
+  "DEFAULT_LIQUIDITY_VESTING_INFO_PARAMS": {
+    "type": "object",
+    "details": [
+      "vestingPercentage",
+      "bpsPerPeriod",
+      "numberOfPeriods",
+      "cliffDurationFromMigrationTime",
+      "totalDuration"
+    ]
+  },
+  "DEFAULT_MIGRATED_POOL_FEE_PARAMS": {
+    "type": "object",
+    "details": [
+      "collectFeeMode",
+      "dynamicFee",
+      "poolFeeBps"
+    ]
+  },
+  "DEFAULT_MIGRATED_POOL_MARKET_CAP_FEE_SCHEDULER_PARAMS": {
+    "type": "object",
+    "details": [
+      "numberOfPeriod",
+      "sqrtPriceStepBps",
+      "schedulerExpirationDuration",
+      "reductionFactor"
+    ]
+  },
+  "DYNAMIC_BONDING_CURVE_PROGRAM_ID": {
+    "type": "object",
+    "details": [
+      "_bn"
+    ]
+  },
+  "DYNAMIC_FEE_DECAY_PERIOD_DEFAULT": {
+    "type": "number",
+    "details": 120
+  },
+  "DYNAMIC_FEE_FILTER_PERIOD_DEFAULT": {
+    "type": "number",
+    "details": 10
+  },
+  "DYNAMIC_FEE_REDUCTION_FACTOR_DEFAULT": {
+    "type": "number",
+    "details": 5000
+  },
+  "DYNAMIC_FEE_ROUNDING_OFFSET": {
+    "type": "object",
+    "details": [
+      "negative",
+      "words",
+      "length",
+      "red"
+    ]
+  },
+  "DYNAMIC_FEE_SCALING_FACTOR": {
+    "type": "object",
+    "details": [
+      "negative",
+      "words",
+      "length",
+      "red"
+    ]
+  },
+  "DammV2BaseFeeMode": {
+    "type": "object",
+    "details": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4",
+      "FeeTimeSchedulerLinear",
+      "FeeTimeSchedulerExponential",
+      "RateLimiter",
+      "FeeMarketCapSchedulerLinear",
+      "FeeMarketCapSchedulerExponential"
+    ]
+  },
+  "DammV2DynamicFeeMode": {
+    "type": "object",
+    "details": [
+      "0",
+      "1",
+      "Disabled",
+      "Enabled"
+    ]
+  },
+  "DynamicBondingCurveClient": {
+    "type": "class",
+    "details": {
+      "staticMethods": [
+        "create"
+      ],
+      "prototypeMethods": []
+    }
+  },
+  "DynamicBondingCurveIdl": {
+    "type": "object",
+    "details": [
+      "address",
+      "metadata",
+      "instructions",
+      "accounts",
+      "events",
+      "errors",
+      "types"
+    ]
+  },
+  "DynamicBondingCurveProgram": {
+    "type": "class",
+    "details": {
+      "staticMethods": [],
+      "prototypeMethods": [
+        "getPoolWithConfig",
+        "prepareSwapParams",
+        "buildCreateConfigTx",
+        "buildCreateConfigWithTransferHookTx",
+        "initializeSplPool",
+        "initializeToken2022Pool",
+        "initializeToken2022PoolWithTransferHook",
+        "buildCreatePoolTx",
+        "buildCreatePoolWithTransferHookTx",
+        "buildSwapBuyTx",
+        "buildSwap2WithTransferHookBuyTx",
+        "buildClaimTradingFeeAccountsForSol",
+        "buildClaimTradingFeeAccountsForNonSol",
+        "getRemainingAccountsForTransferHook",
+        "buildWithdrawMigrationFeeTx",
+        "prepareTokenAccounts",
+        "getProgram"
+      ]
+    }
+  },
+  "FEE_DENOMINATOR": {
+    "type": "number",
+    "details": 1000000000
+  },
+  "FeeRateLimiter": {
+    "type": "class",
+    "details": {
+      "staticMethods": [],
+      "prototypeMethods": [
+        "validate",
+        "getMinBaseFeeNumerator",
+        "getBaseFeeNumeratorFromIncludedFeeAmount",
+        "getBaseFeeNumeratorFromExcludedFeeAmount"
+      ]
+    }
+  },
+  "FeeScheduler": {
+    "type": "class",
+    "details": {
+      "staticMethods": [],
+      "prototypeMethods": [
+        "validate",
+        "getMinBaseFeeNumerator",
+        "getBaseFeeNumeratorFromIncludedFeeAmount",
+        "getBaseFeeNumeratorFromExcludedFeeAmount"
+      ]
+    }
+  },
+  "HOST_FEE_PERCENT": {
+    "type": "number",
+    "details": 20
+  },
+  "LOCKER_PROGRAM_ID": {
+    "type": "object",
+    "details": [
+      "_bn"
+    ]
+  },
+  "MAX_BASIS_POINT": {
+    "type": "number",
+    "details": 10000
+  },
+  "MAX_CREATOR_MIGRATION_FEE_PERCENTAGE": {
+    "type": "number",
+    "details": 100
+  },
+  "MAX_CURVE_POINT": {
+    "type": "number",
+    "details": 16
+  },
+  "MAX_FEE_BPS": {
+    "type": "number",
+    "details": 9900
+  },
+  "MAX_FEE_NUMERATOR": {
+    "type": "number",
+    "details": 990000000
+  },
+  "MAX_LOCK_DURATION_IN_SECONDS": {
+    "type": "number",
+    "details": 63072000
+  },
+  "MAX_MIGRATED_POOL_FEE_BPS": {
+    "type": "number",
+    "details": 1000
+  },
+  "MAX_MIGRATION_FEE_PERCENTAGE": {
+    "type": "number",
+    "details": 99
+  },
+  "MAX_POOL_CREATION_FEE": {
+    "type": "number",
+    "details": 100000000000
+  },
+  "MAX_PRICE_CHANGE_BPS_DEFAULT": {
+    "type": "number",
+    "details": 1500
+  },
+  "MAX_RATE_LIMITER_DURATION_IN_SECONDS": {
+    "type": "number",
+    "details": 43200
+  },
+  "MAX_RATE_LIMITER_DURATION_IN_SLOTS": {
+    "type": "number",
+    "details": 108000
+  },
+  "MAX_SQRT_PRICE": {
+    "type": "object",
+    "details": [
+      "negative",
+      "words",
+      "length",
+      "red"
+    ]
+  },
+  "METAPLEX_PROGRAM_ID": {
+    "type": "object",
+    "details": [
+      "_bn"
+    ]
+  },
+  "MIN_FEE_BPS": {
+    "type": "number",
+    "details": 25
+  },
+  "MIN_FEE_NUMERATOR": {
+    "type": "number",
+    "details": 2500000
+  },
+  "MIN_LOCKED_LIQUIDITY_BPS": {
+    "type": "number",
+    "details": 1000
+  },
+  "MIN_MIGRATED_POOL_FEE_BPS": {
+    "type": "number",
+    "details": 10
+  },
+  "MIN_POOL_CREATION_FEE": {
+    "type": "number",
+    "details": 1000000
+  },
+  "MIN_SQRT_PRICE": {
+    "type": "object",
+    "details": [
+      "negative",
+      "words",
+      "length",
+      "red"
+    ]
+  },
+  "MigratedCollectFeeMode": {
+    "type": "object",
+    "details": [
+      "0",
+      "1",
+      "2",
+      "QuoteToken",
+      "OutputToken",
+      "Compounding"
+    ]
+  },
+  "MigrationFeeOption": {
+    "type": "object",
+    "details": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4",
+      "5",
+      "6",
+      "FixedBps25",
+      "FixedBps30",
+      "FixedBps100",
+      "FixedBps200",
+      "FixedBps400",
+      "FixedBps600",
+      "Customizable"
+    ]
+  },
+  "MigrationOption": {
+    "type": "object",
+    "details": [
+      "0",
+      "1",
+      "MET_DAMM",
+      "MET_DAMM_V2"
+    ]
+  },
+  "MigrationService": {
+    "type": "class",
+    "details": {
+      "staticMethods": [],
+      "prototypeMethods": [
+        "getDynamicVaultProgram",
+        "getDammV1Program",
+        "createLocker",
+        "withdrawLeftover",
+        "createDammV1MigrationMetadata",
+        "migrateToDammV1",
+        "lockDammV1LpToken",
+        "claimDammV1LpToken",
+        "migrateToDammV2"
+      ]
+    }
+  },
+  "OFFSET": {
+    "type": "number",
+    "details": 64
+  },
+  "ONE_Q64": {
+    "type": "object",
+    "details": [
+      "negative",
+      "words",
+      "length",
+      "red"
+    ]
+  },
+  "PROTOCOL_FEE_PERCENT": {
+    "type": "number",
+    "details": 20
+  },
+  "PROTOCOL_POOL_CREATION_FEE_PERCENT": {
+    "type": "number",
+    "details": 10
+  },
+  "PartnerService": {
+    "type": "class",
+    "details": {
+      "staticMethods": [],
+      "prototypeMethods": [
+        "createConfig",
+        "createConfigWithTransferHook",
+        "createConfigAndPool",
+        "createConfigAndPoolWithTransferHook",
+        "createConfigAndPoolWithFirstBuy",
+        "createConfigAndPoolWithFirstBuyWithTransferHook",
+        "createPartnerMetadata",
+        "claimPartnerTradingFee",
+        "claimPartnerTradingFeeToReceiver",
+        "claimPartnerTradingFee2",
+        "partnerWithdrawSurplus",
+        "partnerWithdrawMigrationFee",
+        "claimPartnerPoolCreationFee"
+      ]
+    }
+  },
+  "PoolService": {
+    "type": "class",
+    "details": {
+      "staticMethods": [],
+      "prototypeMethods": [
+        "swap",
+        "swap2",
+        "swap2WithTransferHook",
+        "swapQuote",
+        "swapQuote2",
+        "normalizeQuoteConfig",
+        "buildSimulatedVirtualPool",
+        "getQuoteFromInputAmount",
+        "getQuoteFromOutputAmount"
+      ]
+    }
+  },
+  "RESOLUTION": {
+    "type": "number",
+    "details": 64
+  },
+  "Rounding": {
+    "type": "object",
+    "details": [
+      "0",
+      "1",
+      "Up",
+      "Down"
+    ]
+  },
+  "SECONDS_PER_DAY": {
+    "type": "number",
+    "details": 86400
+  },
+  "SWAP_BUFFER_PERCENTAGE": {
+    "type": "number",
+    "details": 25
+  },
+  "SafeMath": {
+    "type": "class",
+    "details": {
+      "staticMethods": [
+        "add",
+        "sub",
+        "mul",
+        "div",
+        "mod",
+        "shl",
+        "shr"
+      ],
+      "prototypeMethods": []
+    }
+  },
+  "StateService": {
+    "type": "class",
+    "details": {
+      "staticMethods": [],
+      "prototypeMethods": [
+        "getProgram",
+        "fetchVirtualPools",
+        "fetchPoolConfigs",
+        "getPoolConfig",
+        "getPoolConfigs",
+        "getPoolConfigsByOwner",
+        "getPool",
+        "getPools",
+        "getPoolsByConfig",
+        "getPoolsByCreator",
+        "getPoolByBaseMint",
+        "getPoolMigrationQuoteThreshold",
+        "getPoolQuoteTokenCurveProgress",
+        "getPoolBaseTokenCurveProgress",
+        "getPoolMetadata",
+        "getPartnerMetadata",
+        "getPoolFeeMetrics",
+        "getPoolFeeBreakdown",
+        "getPoolsFeesByConfig",
+        "getPoolsFeesByCreator",
+        "getDammV1MigrationMetadata",
+        "getTokenBadge"
+      ]
+    }
+  },
+  "SwapMode": {
+    "type": "object",
+    "details": [
+      "0",
+      "1",
+      "2",
+      "ExactIn",
+      "PartialFill",
+      "ExactOut"
+    ]
+  },
+  "TokenAuthorityOption": {
+    "type": "object",
+    "details": [
+      "0",
+      "1",
+      "2",
+      "3",
+      "4",
+      "CreatorUpdateAuthority",
+      "Immutable",
+      "PartnerUpdateAuthority",
+      "CreatorUpdateAndMintAuthority",
+      "PartnerUpdateAndMintAuthority"
+    ]
+  },
+  "TokenDecimal": {
+    "type": "object",
+    "details": [
+      "6",
+      "7",
+      "8",
+      "9",
+      "SIX",
+      "SEVEN",
+      "EIGHT",
+      "NINE"
+    ]
+  },
+  "TokenType": {
+    "type": "object",
+    "details": [
+      "0",
+      "1",
+      "SPLToken",
+      "Token2022"
+    ]
+  },
+  "TradeDirection": {
+    "type": "object",
+    "details": [
+      "0",
+      "1",
+      "BaseToQuote",
+      "QuoteToBase"
+    ]
+  },
+  "U128_MAX": {
+    "type": "object",
+    "details": [
+      "negative",
+      "words",
+      "length",
+      "red"
+    ]
+  },
+  "U16_MAX": {
+    "type": "number",
+    "details": 65535
+  },
+  "U24_MAX": {
+    "type": "number",
+    "details": 16777215
+  },
+  "U64_MAX": {
+    "type": "object",
+    "details": [
+      "negative",
+      "words",
+      "length",
+      "red"
+    ]
+  },
+  "VAULT_PROGRAM_ID": {
+    "type": "object",
+    "details": [
+      "_bn"
+    ]
+  },
+  "assertConfigAllowsNewPool": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "bpsToFeeNumerator": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "buildCurve": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "buildCurveWithCustomSqrtPrices": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "buildCurveWithLiquidityWeights": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "buildCurveWithMarketCap": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "buildCurveWithMidPrice": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "buildCurveWithTwoSegments": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "calculateAdjustedPercentageSupplyOnMigration": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "calculateBaseToQuoteFromAmountIn": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "calculateBaseToQuoteFromAmountOut": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "calculateFeeSchedulerEndingBaseFeeBps": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "calculateLockedLiquidityBpsAtTime": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "calculateQuoteToBaseFromAmountIn": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "calculateQuoteToBaseFromAmountOut": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "checkRateLimiterApplied": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "cleanUpTokenAccountTx": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "computeSqrtPriceStepBps": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "convertDecimalToBN": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "convertToLamports": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "createDammV1Program": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "createDammV2Program": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "createDbcProgram": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "createDynamicVaultProgram": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "createInitializePermissionlessDynamicVaultIx": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "createLockEscrowIx": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "createProgramAccountFilter": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "createSqrtPrices": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "deriveBaseKeyForLocker": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "deriveDammV1EventAuthority": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "deriveDammV1LockEscrowAddress": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "deriveDammV1LpMintAddress": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "deriveDammV1MigrationMetadataAddress": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "deriveDammV1PoolAddress": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "deriveDammV1PoolAuthority": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "deriveDammV1ProtocolFeeAddress": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "deriveDammV1VaultLPAddress": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "deriveDammV2EventAuthority": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "deriveDammV2LockEscrowAddress": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "deriveDammV2MigrationMetadataAddress": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "deriveDammV2PoolAddress": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "deriveDammV2PoolAuthority": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "deriveDammV2TokenVaultAddress": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "deriveDbcEventAuthority": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "deriveDbcPoolAddress": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "deriveDbcPoolAuthority": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "deriveDbcPoolMetadata": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "deriveDbcTokenVaultAddress": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "deriveEscrow": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "deriveLockerEventAuthority": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "deriveMintMetadata": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "derivePartnerMetadata": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "derivePositionAddress": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "derivePositionNftAccount": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "deriveTokenBadgeAddress": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "deriveTokenVaultKey": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "deriveVaultAddress": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "deriveVaultLpMintAddress": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "deriveVaultPdas": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "feeNumeratorToBps": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "findAssociatedTokenAddress": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "fromDecimalToBN": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "getAccountCreationTimestamp": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "getAccountCreationTimestamps": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "getAccountData": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "getBaseFeeHandler": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "getBaseFeeNumerator": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "getBaseFeeNumeratorByPeriod": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "getBaseFeeParams": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "getBaseTokenForSwap": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "getCheckedAmounts": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "getCurrentPoint": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "getCurveBreakdown": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "getDeltaAmountBaseUnsigned": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "getDeltaAmountBaseUnsigned256": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "getDeltaAmountBaseUnsignedUnchecked": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "getDeltaAmountQuoteUnsigned": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "getDeltaAmountQuoteUnsigned256": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "getDeltaAmountQuoteUnsignedUnchecked": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "getDynamicFeeParams": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "getExcludedFeeAmount": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "getFeeMode": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "getFeeNumeratorFromExcludedAmount": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "getFeeNumeratorFromIncludedAmount": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "getFeeNumeratorOnExponentialFeeScheduler": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "getFeeNumeratorOnLinearFeeScheduler": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "getFeeOnAmount": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "getFeeSchedulerMaxBaseFeeNumerator": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "getFeeSchedulerMinBaseFeeNumerator": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "getFeeSchedulerParams": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "getFirstCurve": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "getFirstKey": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "getIncludedFeeAmount": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "getInitialLiquidityFromDeltaBase": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "getInitialLiquidityFromDeltaQuote": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "getLiquidity": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "getLiquidityVestingInfoParams": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "getLockedVestingParams": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "getMaxIndex": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "getMaxOutAmountWithMinBaseFee": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "getMigratedPoolFeeParams": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "getMigratedPoolMarketCapFeeSchedulerParams": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "getMigrationBaseToken": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "getMigrationQuoteAmount": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "getMigrationQuoteAmountFromMigrationQuoteThreshold": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "getMigrationQuoteThresholdFromMigrationQuoteAmount": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "getMigrationThresholdPrice": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "getNextSqrtPriceFromBaseAmountInRoundingUp": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "getNextSqrtPriceFromBaseAmountOutRoundingUp": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "getNextSqrtPriceFromInput": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "getNextSqrtPriceFromOutput": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "getNextSqrtPriceFromQuoteAmountInRoundingDown": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "getNextSqrtPriceFromQuoteAmountOutRoundingDown": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "getOrCreateATAInstruction": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "getPercentageSupplyOnMigration": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "getPriceFromSqrtPrice": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "getProtocolMigrationFee": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "getQuoteReserveFromNextSqrtPrice": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "getRateLimiterExcludedFeeAmount": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "getRateLimiterMinBaseFeeNumerator": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "getRateLimiterParams": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "getSecondKey": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "getSqrtPriceFromMarketCap": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "getSqrtPriceFromPrice": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "getStartingBaseFeeBpsFromBaseFeeParams": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "getSwapAmountWithBuffer": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "getSwapResult": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "getSwapResultFromExactInput": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "getSwapResultFromExactOutput": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "getSwapResultFromPartialInput": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "getTokenBadgeRemainingAccounts": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "getTokenDecimals": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "getTokenProgram": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "getTokenType": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "getTokenomics": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "getTotalFeeNumerator": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "getTotalFeeNumeratorFromExcludedFeeAmount": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "getTotalFeeNumeratorFromIncludedFeeAmount": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "getTotalSupplyFromCurve": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "getTotalTokenSupply": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "getTotalVestingAmount": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "getTwoCurve": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "getVariableFeeNumerator": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "getVestingLockedLiquidityBpsAtNSeconds": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "hasMintAuthority": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "isDefaultLockedVesting": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "isDynamicFeeEnabled": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "isNativeSol": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "isNonZeroRateLimiter": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "isRateLimiterApplied": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "isZeroRateLimiter": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "mulDiv": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "mulShr": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "pow": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "prepareSwapAmountParam": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "prepareTokenAccountTx": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "splitFees": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "sqrt": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "swapQuote": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "swapQuoteExactIn": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "swapQuoteExactOut": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "swapQuotePartialFill": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "toNumerator": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "unwrapSOLInstruction": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "validateActivationType": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "validateBalance": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "validateBaseTokenType": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "validateCollectFeeMode": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "validateCompoundingFeeBps": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "validateConfigParameters": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "validateCurve": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "validateDynamicFee": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "validateFeeRateLimiter": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "validateFeeScheduler": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "validateLPPercentages": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "validateLiquidityVestingInfo": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "validateMarketCapFeeSchedulerRequiresPoolFeeBps": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "validateMigratedCollectFeeMode": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "validateMigratedPoolBaseFeeMode": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "validateMigratedPoolFee": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "validateMigrationAndTokenType": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "validateMigrationFee": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "validateMigrationFeeOption": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "validateMinimumLockedLiquidity": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "validatePoolCreationFee": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "validatePoolFees": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "validateQuoteMintBasic": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "validateSwapAmount": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "validateTokenAuthorityOptions": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "validateTokenDecimals": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "validateTokenSupply": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "validateTransferHookProgram": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "validateTransferHookProgramExecutable": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  },
+  "wrapSOLInstruction": {
+    "type": "function",
+    "details": {
+      "staticMethods": []
+    }
+  }
+}

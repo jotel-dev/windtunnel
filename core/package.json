@@ -1,0 +1,19 @@
+{
+  "name": "windtunnel-core",
+  "version": "0.1.0",
+  "description": "Simulation and stress-test engine for Meteora Dynamic Bonding Curves",
+  "type": "module",
+  "scripts": {
+    "explore": "tsx explore.ts",
+    "build": "tsc"
+  },
+  "dependencies": {
+    "@meteora-ag/dynamic-bonding-curve-sdk": "^1.5.12",
+    "@solana/web3.js": "^1.99.0"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.2",
+    "tsx": "^4.23.15",
+    "typescript": "^5.9.3"
+  }
+}
