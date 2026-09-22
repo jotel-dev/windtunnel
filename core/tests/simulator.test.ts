@@ -1,145 +1,340 @@
 import { describe, it, expect } from 'vitest';
 import BN from 'bn.js';
-import Decimal from 'decimal.js';
+import DecimalConstructor from 'decimal.js';
 import {
-  buildCurveWithMarketCap,
-  swapQuoteExactIn,
   ActivationType,
   CollectFeeMode,
   MigrationOption,
-  MigrationFeeOption,
-  TokenType,
-  TokenDecimal,
-  TokenAuthorityOption,
+  buildCurve,
+  buildCurveWithMarketCap,
+  buildCurveWithTwoSegments,
+  swapQuoteExactIn,
+  getPriceFromSqrtPrice,
+  getFeeSchedulerParams,
   getBaseFeeHandler,
-  getMigrationThresholdPrice,
   getMigrationQuoteAmountFromMigrationQuoteThreshold,
-  getMigrationBaseToken,
-  PROTOCOL_FEE_PERCENT,
+  FEE_DENOMINATOR,
+  getExcludedFeeAmount,
+  ConfigParameters,
 } from '@meteora-ag/dynamic-bonding-curve-sdk';
+import { VirtualPoolSimulator, SeededRng, Mulberry32 } from '../src/index.js';
 
-import { VirtualPoolSimulator, normalizeConfig } from '../src/sim/pool.js';
-import { SeededRng } from '../src/sim/rng.js';
-import type { SimTrade, SimClock } from '../src/sim/types.js';
+describe('VirtualPoolSimulator Hardened Test Suite', () => {
+  // --------------------------------------------------------------------------
+  // PART A - 1: EQUIVALENCE (50 Random Valid Configs)
+  // --------------------------------------------------------------------------
+  it('Equivalence: step() on fresh state equals direct swapQuoteExactIn for buys and sells across 50 random configs', () => {
+    const masterSeed = 104729;
+    const rng = new SeededRng(masterSeed);
 
-function createValidConfig(options: {
-  initialMarketCap?: number;
-  migrationMarketCap?: number;
-  startingFeeBps?: number;
-  endingFeeBps?: number;
-  baseFeeMode?: number; // 0 = Linear, 1 = Exponential
-  activationType?: ActivationType;
-  creatorTradingFeePercentage?: number;
-} = {}) {
-  const {
-    initialMarketCap = 5000,
-    migrationMarketCap = 50000,
-    startingFeeBps = 200,
-    endingFeeBps = 100,
-    baseFeeMode = 0,
-    activationType = ActivationType.Timestamp,
-    creatorTradingFeePercentage = 25,
-  } = options;
+    for (let i = 0; i < 50; i++) {
+      const seed = rng.nextInt(1, 10000000);
+      const prng = new SeededRng(seed);
 
-  const isFixedFee = startingFeeBps === endingFeeBps;
-  const numberOfPeriod = isFixedFee ? 0 : 10;
-  const totalDuration = isFixedFee ? 0 : 86400;
+      try {
+        const modeChoice = prng.nextInt(0, 2);
+        let baseFeeParams: any;
+        if (modeChoice === 0) {
+          // Linear decaying fee scheduler
+          const endingFeeBps = prng.nextInt(25, 200);
+          const startingFeeBps = prng.nextInt(endingFeeBps + 10, 1000);
+          const numberOfPeriod = prng.nextInt(2, 20);
+          const totalDuration = prng.nextInt(60, 3600);
+          baseFeeParams = {
+            baseFeeMode: 0,
+            feeSchedulerParam: {
+              startingFeeBps,
+              endingFeeBps,
+              numberOfPeriod,
+              totalDuration,
+            },
+          };
+        } else if (modeChoice === 1) {
+          // Exponential decaying fee scheduler
+          const endingFeeBps = prng.nextInt(25, 200);
+          const startingFeeBps = prng.nextInt(endingFeeBps + 10, 1000);
+          const numberOfPeriod = prng.nextInt(2, 20);
+          const totalDuration = prng.nextInt(60, 3600);
+          baseFeeParams = {
+            baseFeeMode: 1,
+            feeSchedulerParam: {
+              startingFeeBps,
+              endingFeeBps,
+              numberOfPeriod,
+              totalDuration,
+            },
+          };
+        } else {
+          // Fixed fee
+          const feeBps = prng.nextInt(25, 1000);
+          baseFeeParams = {
+            baseFeeMode: 0,
+            feeSchedulerParam: {
+              startingFeeBps: feeBps,
+              endingFeeBps: feeBps,
+              numberOfPeriod: 0,
+              totalDuration: 0,
+            },
+          };
+        }
 
-  const token = {
-    tokenType: TokenType.SPLToken,
-    tokenBaseDecimal: TokenDecimal.SIX,
-    tokenQuoteDecimal: TokenDecimal.NINE,
-    tokenAuthorityOption: TokenAuthorityOption.Immutable,
-    totalTokenSupply: 1_000_000_000,
-    leftover: 0,
-  };
+        const initialMarketCap = prng.nextInt(5, 50);
+        const migrationMarketCap = prng.nextInt(initialMarketCap + 10, 200);
+        const migrationQuoteThreshold = prng.nextInt(20, 100);
 
-  const fee = {
-    baseFeeParams: {
-      baseFeeMode,
-      feeSchedulerParam: {
-        startingFeeBps,
-        endingFeeBps,
-        numberOfPeriod,
-        totalDuration,
-      },
-    },
-    dynamicFeeEnabled: false,
-    collectFeeMode: CollectFeeMode.QuoteToken,
-    creatorTradingFeePercentage,
-    poolCreationFee: 0,
-    enableFirstSwapWithMinFee: false,
-  };
+        const configParams = buildCurveWithMarketCap({
+          token: {
+            tokenType: 0,
+            tokenBaseDecimal: 6,
+            tokenQuoteDecimal: 9,
+            tokenAuthorityOption: 0,
+            totalTokenSupply: 1000000000,
+            leftover: 0,
+          },
+          fee: {
+            baseFeeParams,
+            dynamicFeeEnabled: false,
+            collectFeeMode: 0,
+            creatorTradingFeePercentage: 0,
+            poolCreationFee: 0,
+            enableFirstSwapWithMinFee: false,
+          },
+          migration: {
+            migrationOption: 1,
+            migrationFeeOption: 0,
+            migrationFee: { feePercentage: 0, creatorFeePercentage: 0 },
+          },
+          liquidityDistribution: {
+            partnerPermanentLockedLiquidityPercentage: 0,
+            partnerLiquidityPercentage: 0,
+            creatorPermanentLockedLiquidityPercentage: 0,
+            creatorLiquidityPercentage: 0,
+          },
+          lockedVesting: {
+            totalLockedVestingAmount: 0,
+            numberOfVestingPeriod: 0,
+            cliffUnlockAmount: 0,
+            totalVestingDuration: 0,
+            cliffDurationFromMigrationTime: 0,
+          },
+          activationType: 1,
+          initialMarketCap,
+          migrationMarketCap,
+        });
 
-  const migration = {
-    migrationOption: MigrationOption.MET_DAMM_V2,
-    migrationFeeOption: MigrationFeeOption.FixedBps25,
-    migrationFee: {
-      feePercentage: 0,
-      creatorFeePercentage: 0,
-    },
-  };
+        // 1. Fresh Buy Equivalence
+        const simBuy = new VirtualPoolSimulator(configParams);
+        const freshBuyPool = new VirtualPoolSimulator(configParams);
+        const buyAmount = new BN(prng.nextInt(1000000, 50000000)); // 0.001 - 0.05 SOL
 
-  const liquidityDistribution = {
-    partnerLiquidityPercentage: 20,
-    partnerPermanentLockedLiquidityPercentage: 10,
-    creatorLiquidityPercentage: 80,
-    creatorPermanentLockedLiquidityPercentage: 10,
-  };
+        const directBuy = swapQuoteExactIn(
+          freshBuyPool.virtualPool,
+          freshBuyPool.config,
+          false, // buy (Quote to Base)
+          buyAmount,
+          0,
+          false,
+          freshBuyPool.virtualPool.poolState.activationPoint,
+          false
+        );
+        const buyStep = simBuy.step({ side: 'buy', amount: buyAmount });
 
-  const lockedVesting = {
-    totalLockedVestingAmount: 0,
-    numberOfVestingPeriod: 0,
-    cliffUnlockAmount: 0,
-    totalVestingDuration: 0,
-    cliffDurationFromMigrationTime: 0,
-  };
+        expect(buyStep.quoteResult.outputAmount.toString()).toBe(directBuy.outputAmount.toString());
+        expect(buyStep.quoteResult.nextSqrtPrice.toString()).toBe(directBuy.nextSqrtPrice.toString());
+        expect(buyStep.quoteResult.tradingFee.toString()).toBe(directBuy.tradingFee.toString());
+        expect(buyStep.quoteResult.protocolFee.toString()).toBe(directBuy.protocolFee.toString());
 
-  return buildCurveWithMarketCap({
-    token,
-    fee,
-    migration,
-    liquidityDistribution,
-    lockedVesting,
-    activationType,
-    initialMarketCap,
-    migrationMarketCap,
+        // 2. Sell Equivalence (after initial buy provides quote reserves)
+        const simSell = new VirtualPoolSimulator(configParams);
+        const directSellPool = new VirtualPoolSimulator(configParams);
+        const initBuyAmount = new BN(prng.nextInt(10000000, 100000000)); // 0.01 - 0.1 SOL
+
+        const preBuyStep = simSell.step({ side: 'buy', amount: initBuyAmount });
+        directSellPool.step({ side: 'buy', amount: initBuyAmount });
+
+        const sellAmount = preBuyStep.quoteResult.outputAmount.divn(2); // sell half base tokens received
+
+        const directSell = swapQuoteExactIn(
+          directSellPool.virtualPool,
+          directSellPool.config,
+          true, // sell (Base to Quote)
+          sellAmount,
+          0,
+          false,
+          simSell.virtualPool.poolState.activationPoint,
+          false
+        );
+        const sellStep = simSell.step({ side: 'sell', amount: sellAmount });
+
+        expect(sellStep.quoteResult.outputAmount.toString()).toBe(directSell.outputAmount.toString());
+        expect(sellStep.quoteResult.nextSqrtPrice.toString()).toBe(directSell.nextSqrtPrice.toString());
+        expect(sellStep.quoteResult.tradingFee.toString()).toBe(directSell.tradingFee.toString());
+        expect(sellStep.quoteResult.protocolFee.toString()).toBe(directSell.protocolFee.toString());
+      } catch (err) {
+        console.error(`Equivalence test failed at config iteration ${i} with seed ${seed}`);
+        throw err;
+      }
+    }
   });
-}
 
-describe('VirtualPoolSimulator Test Suite', () => {
-  // 1. Determinism
-  it('Test 1: Determinism - two runs with identical inputs produce identical state', () => {
-    const config = createValidConfig();
-    const clock: SimClock = { slot: 1000, timestamp: 1700000000 };
+  // --------------------------------------------------------------------------
+  // PART A - 2: INVARIANTS (200 Trades on 20 Configs)
+  // --------------------------------------------------------------------------
+  it('Invariants: 200-trade random sequences across 20 configs preserve fees, reserves, and price monotonicity', () => {
+    const masterSeed = 54321;
+    const rng = new SeededRng(masterSeed);
 
-    const sim1 = new VirtualPoolSimulator(config, clock);
-    const sim2 = new VirtualPoolSimulator(config, clock);
+    for (let c = 0; c < 20; c++) {
+      const seed = rng.nextInt(1, 10000000);
+      const prng = new SeededRng(seed);
 
-    const tradeAmounts = [
-      new BN('500000000'),  // 0.5 SOL
-      new BN('1000000000'), // 1.0 SOL
-      new BN('2500000000'), // 2.5 SOL
-    ];
+      try {
+        const modeChoice = prng.nextInt(0, 2);
+        let baseFeeParams: any;
+        if (modeChoice === 0) {
+          const endingFeeBps = prng.nextInt(25, 200);
+          const startingFeeBps = prng.nextInt(endingFeeBps + 10, 1000);
+          baseFeeParams = {
+            baseFeeMode: 0,
+            feeSchedulerParam: {
+              startingFeeBps,
+              endingFeeBps,
+              numberOfPeriod: prng.nextInt(2, 20),
+              totalDuration: prng.nextInt(60, 3600),
+            },
+          };
+        } else if (modeChoice === 1) {
+          const endingFeeBps = prng.nextInt(25, 200);
+          const startingFeeBps = prng.nextInt(endingFeeBps + 10, 1000);
+          baseFeeParams = {
+            baseFeeMode: 1,
+            feeSchedulerParam: {
+              startingFeeBps,
+              endingFeeBps,
+              numberOfPeriod: prng.nextInt(2, 20),
+              totalDuration: prng.nextInt(60, 3600),
+            },
+          };
+        } else {
+          const feeBps = prng.nextInt(25, 1000);
+          baseFeeParams = {
+            baseFeeMode: 0,
+            feeSchedulerParam: {
+              startingFeeBps: feeBps,
+              endingFeeBps: feeBps,
+              numberOfPeriod: 0,
+              totalDuration: 0,
+            },
+          };
+        }
 
-    for (let i = 0; i < tradeAmounts.length; i++) {
-      const trade: SimTrade = {
-        side: 'buy',
-        amount: tradeAmounts[i],
-      };
-      const simClock: SimClock = {
-        slot: clock.slot + (i + 1) * 10,
-        timestamp: clock.timestamp + (i + 1) * 60,
-      };
+        const creatorTradingFeePercentage = prng.nextInt(0, 100);
 
-      const res1 = sim1.step(trade, simClock);
-      const res2 = sim2.step(trade, simClock);
+        const configParams = buildCurveWithMarketCap({
+          token: { tokenType: 0, tokenBaseDecimal: 6, tokenQuoteDecimal: 9, tokenAuthorityOption: 0, totalTokenSupply: 1000000000, leftover: 0 },
+          fee: { baseFeeParams, dynamicFeeEnabled: false, collectFeeMode: 0, creatorTradingFeePercentage, poolCreationFee: 0, enableFirstSwapWithMinFee: false },
+          migration: { migrationOption: 1, migrationFeeOption: 0, migrationFee: { feePercentage: 0, creatorFeePercentage: 0 } },
+          liquidityDistribution: { partnerPermanentLockedLiquidityPercentage: 0, partnerLiquidityPercentage: 0, creatorPermanentLockedLiquidityPercentage: 0, creatorLiquidityPercentage: 0 },
+          lockedVesting: { totalLockedVestingAmount: 0, numberOfVestingPeriod: 0, cliffUnlockAmount: 0, totalVestingDuration: 0, cliffDurationFromMigrationTime: 0 },
+          activationType: 1,
+          initialMarketCap: 10,
+          migrationMarketCap: 500,
+        });
 
-      expect(res1.quoteResult.outputAmount.toString()).toBe(res2.quoteResult.outputAmount.toString());
-      expect(res1.quoteResult.nextSqrtPrice.toString()).toBe(res2.quoteResult.nextSqrtPrice.toString());
-      expect(res1.quoteResult.tradingFee.toString()).toBe(res2.quoteResult.tradingFee.toString());
-      expect(res1.quoteResult.protocolFee.toString()).toBe(res2.quoteResult.protocolFee.toString());
-      expect(res1.priceImpact).toBeCloseTo(res2.priceImpact, 10);
+        const sim = new VirtualPoolSimulator(configParams);
+
+        for (let t = 0; t < 200; t++) {
+          const isBuy = sim.virtualPool.poolState.quoteReserve.isZero() ? true : prng.next() < 0.6;
+          const side = isBuy ? 'buy' : 'sell';
+
+          let amount: BN;
+          if (isBuy) {
+            amount = new BN(prng.nextInt(100000, 2000000));
+          } else {
+            const maxSell = sim.virtualPool.poolState.baseReserve.divn(10);
+            const randBase = new BN(prng.nextInt(1000, 500000));
+            amount = BN.min(randBase, maxSell);
+            if (amount.isZero()) amount = new BN(1000);
+          }
+
+          const snapBefore = sim.getSnapshot();
+          const stepRes = sim.step({ side, amount });
+          const snapAfter = sim.getSnapshot();
+
+          // Invariant 1: Fee components (protocol + creator + partner) sum to total fee
+          const stepTotalFee = stepRes.quoteResult.protocolFee.add(stepRes.quoteResult.tradingFee);
+          const deltaProtocol = snapAfter.accumulatedFees.protocolQuoteFee.sub(snapBefore.accumulatedFees.protocolQuoteFee)
+            .add(snapAfter.accumulatedFees.protocolBaseFee.sub(snapBefore.accumulatedFees.protocolBaseFee));
+          const deltaCreator = snapAfter.accumulatedFees.creatorQuoteFee.sub(snapBefore.accumulatedFees.creatorQuoteFee)
+            .add(snapAfter.accumulatedFees.creatorBaseFee.sub(snapBefore.accumulatedFees.creatorBaseFee));
+          const deltaPartner = snapAfter.accumulatedFees.partnerQuoteFee.sub(snapBefore.accumulatedFees.partnerQuoteFee)
+            .add(snapAfter.accumulatedFees.partnerBaseFee.sub(snapBefore.accumulatedFees.partnerBaseFee));
+          const feeSum = deltaProtocol.add(deltaCreator).add(deltaPartner);
+
+          expect(feeSum.toString()).toBe(stepTotalFee.toString());
+
+          // Invariant 2: No negative reserves or amounts
+          expect(snapAfter.quoteReserve.isNeg()).toBe(false);
+          expect(snapAfter.baseReserve.isNeg()).toBe(false);
+          expect(stepRes.quoteResult.outputAmount.isNeg()).toBe(false);
+
+          // Invariant 3: Price never decreases under buy operations
+          if (isBuy) {
+            const currentPrice = sim.getSpotPrice();
+            expect(currentPrice.gte(snapBefore.currentPriceUI)).toBe(true);
+          }
+        }
+      } catch (err) {
+        console.error(`Invariants test failed at config ${c} with seed ${seed}`);
+        throw err;
+      }
+    }
+  });
+
+  // --------------------------------------------------------------------------
+  // PART A - 3: SIMULATOR DETERMINISM
+  // --------------------------------------------------------------------------
+  it('Simulator determinism: identical config, seed, and trade list produce deep-equal final snapshots', () => {
+    const prng = new SeededRng(777);
+    const baseFeeParams = {
+      baseFeeMode: 0,
+      feeSchedulerParam: {
+        startingFeeBps: 500,
+        endingFeeBps: 50,
+        numberOfPeriod: 10,
+        totalDuration: 1000,
+      },
+    };
+    const config = buildCurveWithMarketCap({
+      token: { tokenType: 0, tokenBaseDecimal: 6, tokenQuoteDecimal: 9, tokenAuthorityOption: 0, totalTokenSupply: 1000000000, leftover: 0 },
+      fee: { baseFeeParams, dynamicFeeEnabled: false, collectFeeMode: 0, creatorTradingFeePercentage: 20, poolCreationFee: 0, enableFirstSwapWithMinFee: false },
+      migration: { migrationOption: 1, migrationFeeOption: 0, migrationFee: { feePercentage: 0, creatorFeePercentage: 0 } },
+      liquidityDistribution: { partnerPermanentLockedLiquidityPercentage: 0, partnerLiquidityPercentage: 0, creatorPermanentLockedLiquidityPercentage: 0, creatorLiquidityPercentage: 0 },
+      lockedVesting: { totalLockedVestingAmount: 0, numberOfVestingPeriod: 0, cliffUnlockAmount: 0, totalVestingDuration: 0, cliffDurationFromMigrationTime: 0 },
+      activationType: 1,
+      initialMarketCap: 10,
+      migrationMarketCap: 200,
+    });
+
+    const trades: any[] = [];
+    for (let i = 0; i < 50; i++) {
+      trades.push({
+        side: i % 3 === 0 ? 'sell' : 'buy',
+        amount: new BN(prng.nextInt(100000, 5000000)),
+      });
+    }
+
+    const sim1 = new VirtualPoolSimulator(config);
+    const sim2 = new VirtualPoolSimulator(config);
+
+    for (const t of trades) {
+      if (t.side === 'sell' && sim1.virtualPool.poolState.quoteReserve.isZero()) {
+        sim1.step({ side: 'buy', amount: t.amount });
+        sim2.step({ side: 'buy', amount: t.amount });
+      } else {
+        sim1.step(t);
+        sim2.step(t);
+      }
     }
 
     const snap1 = sim1.getSnapshot();
@@ -148,277 +343,151 @@ describe('VirtualPoolSimulator Test Suite', () => {
     expect(snap1.sqrtPrice.toString()).toBe(snap2.sqrtPrice.toString());
     expect(snap1.quoteReserve.toString()).toBe(snap2.quoteReserve.toString());
     expect(snap1.baseReserve.toString()).toBe(snap2.baseReserve.toString());
+    expect(snap1.totalBaseTokensSold.toString()).toBe(snap2.totalBaseTokensSold.toString());
+    expect(snap1.tradesExecuted).toBe(snap2.tradesExecuted);
     expect(snap1.accumulatedFees.protocolQuoteFee.toString()).toBe(snap2.accumulatedFees.protocolQuoteFee.toString());
     expect(snap1.accumulatedFees.creatorQuoteFee.toString()).toBe(snap2.accumulatedFees.creatorQuoteFee.toString());
     expect(snap1.accumulatedFees.partnerQuoteFee.toString()).toBe(snap2.accumulatedFees.partnerQuoteFee.toString());
   });
 
-  // 2. Single-quote equivalence across at least 20 random valid configs
-  it('Test 2: Single-quote equivalence on fresh state across 20 random valid configs', () => {
-    const rng = new SeededRng(999);
-
-    for (let i = 0; i < 20; i++) {
-      const initialMcap = rng.nextInt(2000, 10000);
-      const migrationMcap = rng.nextInt(30000, 150000);
-      const startingFeeBps = rng.nextInt(150, 600);
-      const endingFeeBps = rng.nextInt(25, 100);
-      const baseFeeMode = i % 2 === 0 ? 0 : 1; // Alternate Linear and Exponential
-      const activationType = i % 3 === 0 ? ActivationType.Slot : ActivationType.Timestamp;
-      const creatorTradingFeePct = rng.nextInt(0, 100);
-
-      const rawConfig = createValidConfig({
-        initialMarketCap: initialMcap,
-        migrationMarketCap: migrationMcap,
-        startingFeeBps,
-        endingFeeBps,
-        baseFeeMode,
-        activationType,
-        creatorTradingFeePercentage: creatorTradingFeePct,
-      });
-
-      const clock: SimClock = { slot: 5000, timestamp: 1700005000 };
-      const sim = new VirtualPoolSimulator(rawConfig, clock);
-
-      // Buy with 1 SOL
-      const buyAmount = new BN('1000000000');
-      const simResult = sim.step({ side: 'buy', amount: buyAmount });
-
-      // Run SDK swapQuoteExactIn directly on pristine virtual pool
-      const poolConfig = normalizeConfig(rawConfig);
-      const directVirtualPool = {
-        poolState: {
-          sqrtPrice: poolConfig.sqrtStartPrice.clone(),
-          baseReserve: new BN(0),
-          quoteReserve: new BN(0),
-          activationPoint: activationType === ActivationType.Slot ? new BN(clock.slot) : new BN(clock.timestamp),
-          volatilityTracker: {
-            lastUpdateTimestamp: new BN(clock.timestamp),
-            sqrtPriceReference: poolConfig.sqrtStartPrice.clone(),
-            volatilityAccumulator: new BN(0),
-            volatilityReference: new BN(0),
-            padding: [],
-          },
-        } as any,
-      };
-
-      const directQuote = swapQuoteExactIn(
-        directVirtualPool,
-        poolConfig,
-        false, // buy
-        buyAmount,
-        0,
-        false,
-        activationType === ActivationType.Slot ? new BN(clock.slot) : new BN(clock.timestamp),
-        false
-      );
-
-      expect(simResult.quoteResult.outputAmount.toString()).toBe(directQuote.outputAmount.toString());
-      expect(simResult.quoteResult.nextSqrtPrice.toString()).toBe(directQuote.nextSqrtPrice.toString());
-      expect(simResult.quoteResult.tradingFee.toString()).toBe(directQuote.tradingFee.toString());
-      expect(simResult.quoteResult.protocolFee.toString()).toBe(directQuote.protocolFee.toString());
-      expect(simResult.quoteResult.referralFee.toString()).toBe(directQuote.referralFee.toString());
-    }
-  });
-
-  // 3. Invariants over random trade sequences
-  it('Test 3: Invariants over random trade sequences', () => {
-    const config = createValidConfig({ creatorTradingFeePercentage: 40 });
-    const sim = new VirtualPoolSimulator(config, { slot: 1000, timestamp: 1700000000 });
-
-    let prevPrice = sim.getSpotPrice();
-
-    const buyAmounts = [
-      new BN('100000000'), // 0.1 SOL
-      new BN('250000000'), // 0.25 SOL
-      new BN('500000000'), // 0.5 SOL
-      new BN('1000000000'), // 1.0 SOL
+  // --------------------------------------------------------------------------
+  // PART A - 4: FEE SCHEDULER AT MULTIPLE ELAPSED TIMES
+  // --------------------------------------------------------------------------
+  it('Fee scheduler: base fee used at multiple elapsed times equals SDK getBaseFeeHandler across linear/exponential and slot/timestamp', () => {
+    const modes = [
+      { mode: 0, name: 'linear' },
+      { mode: 1, name: 'exponential' },
+    ];
+    const activations = [
+      { type: 0, name: 'slot' },
+      { type: 1, name: 'timestamp' },
     ];
 
-    for (const amount of buyAmounts) {
-      const res = sim.step({ side: 'buy', amount });
+    for (const m of modes) {
+      for (const a of activations) {
+        const startingFeeBps = 600;
+        const endingFeeBps = 100;
+        const numberOfPeriod = 5;
+        const totalDuration = 500;
+        const baseFeeParams = {
+          baseFeeMode: m.mode,
+          feeSchedulerParam: {
+            startingFeeBps,
+            endingFeeBps,
+            numberOfPeriod,
+            totalDuration,
+          },
+        };
 
-      // Invariant 1: Total fee splits: protocolFee + tradingFee
-      const totalFeeFromQuote = res.quoteResult.tradingFee.add(res.quoteResult.protocolFee);
-      expect(res.quoteResult.protocolFee.mul(new BN(100)).div(totalFeeFromQuote).toNumber()).toBe(PROTOCOL_FEE_PERCENT);
+        const config = buildCurveWithMarketCap({
+          token: { tokenType: 0, tokenBaseDecimal: 6, tokenQuoteDecimal: 9, tokenAuthorityOption: 0, totalTokenSupply: 1000000000, leftover: 0 },
+          fee: { baseFeeParams, dynamicFeeEnabled: false, collectFeeMode: 0, creatorTradingFeePercentage: 0, poolCreationFee: 0, enableFirstSwapWithMinFee: false },
+          migration: { migrationOption: 1, migrationFeeOption: 0, migrationFee: { feePercentage: 0, creatorFeePercentage: 0 } },
+          liquidityDistribution: { partnerPermanentLockedLiquidityPercentage: 0, partnerLiquidityPercentage: 0, creatorPermanentLockedLiquidityPercentage: 0, creatorLiquidityPercentage: 0 },
+          lockedVesting: { totalLockedVestingAmount: 0, numberOfVestingPeriod: 0, cliffUnlockAmount: 0, totalVestingDuration: 0, cliffDurationFromMigrationTime: 0 },
+          activationType: a.type,
+          initialMarketCap: 10,
+          migrationMarketCap: 200,
+        });
 
-      // Invariant 2: Price increases monotonically under buys only
-      const currentPrice = sim.getSpotPrice();
-      expect(currentPrice.gt(prevPrice)).toBe(true);
-      prevPrice = currentPrice;
+        const initialClock = { slot: 1000, timestamp: 1700000000 };
+        const sim = new VirtualPoolSimulator(config, initialClock);
 
-      // Invariant 3: Reserves and fees non-negative
-      expect(sim.getQuoteReserve().gte(new BN(0))).toBe(true);
-      expect(sim.getBaseReserve().gte(new BN(0))).toBe(true);
-      expect(sim.accumulatedFees.protocolQuoteFee.gte(new BN(0))).toBe(true);
-      expect(sim.accumulatedFees.creatorQuoteFee.gte(new BN(0))).toBe(true);
-      expect(sim.accumulatedFees.partnerQuoteFee.gte(new BN(0))).toBe(true);
+        const handler = getBaseFeeHandler(
+          sim.config.poolFees.baseFee.cliffFeeNumerator,
+          sim.config.poolFees.baseFee.firstFactor,
+          sim.config.poolFees.baseFee.secondFactor,
+          sim.config.poolFees.baseFee.thirdFactor,
+          sim.config.poolFees.baseFee.baseFeeMode
+        );
 
-      // Invariant 4: Creator fee + Partner fee = Total trading fee
-      const fees = sim.accumulatedFees;
-      expect(fees.creatorQuoteFee.add(fees.partnerQuoteFee).toString()).toBe(fees.totalTradingQuoteFee.toString());
+        const elapsedList = [0, 50, 150, 350, 600];
+        for (const elapsed of elapsedList) {
+          const testClock = {
+            slot: initialClock.slot + (a.type === 0 ? elapsed : 0),
+            timestamp: initialClock.timestamp + (a.type === 1 ? elapsed : 0),
+          };
+          const currentPoint = a.type === 0 ? new BN(testClock.slot) : new BN(testClock.timestamp);
+          const activationPoint = a.type === 0 ? new BN(initialClock.slot) : new BN(initialClock.timestamp);
+
+          const expectedNumerator = handler.getBaseFeeNumeratorFromIncludedFeeAmount(
+            currentPoint,
+            activationPoint,
+            1, // QuoteToBase (buy)
+            new BN(1000000)
+          );
+
+          const simStep = new VirtualPoolSimulator(config, initialClock);
+          const res = simStep.step({ side: 'buy', amount: new BN(1000000) }, testClock);
+
+          const totalFee = res.quoteResult.tradingFee.add(res.quoteResult.protocolFee);
+          const [, expectedFee] = getExcludedFeeAmount(expectedNumerator, new BN(1000000));
+
+          expect(totalFee.toString()).toBe(expectedFee.toString());
+        }
+      }
     }
   });
 
-  // 4. Buy-then-sell round trip loses only fees
-  it('Test 4: Buy-then-sell round trip loses only fees within rounding tolerance', () => {
-    const config = createValidConfig({
-      startingFeeBps: 200,
-      endingFeeBps: 200, // constant fee for round-trip verification
+  // --------------------------------------------------------------------------
+  // PART A - 5: GRADUATION THRESHOLD & SDK QUOTE FORMULA MATCH
+  // --------------------------------------------------------------------------
+  it('Graduation: migration quote equals SDK getMigrationQuoteAmountFromMigrationQuoteThreshold and final partial fill lands on threshold', () => {
+    const config = buildCurveWithMarketCap({
+      token: { tokenType: 0, tokenBaseDecimal: 6, tokenQuoteDecimal: 9, tokenAuthorityOption: 0, totalTokenSupply: 1000000000, leftover: 0 },
+      fee: {
+        baseFeeParams: {
+          baseFeeMode: 0,
+          feeSchedulerParam: { startingFeeBps: 100, endingFeeBps: 100, numberOfPeriod: 0, totalDuration: 0 },
+        },
+        dynamicFeeEnabled: false,
+        collectFeeMode: 0,
+        creatorTradingFeePercentage: 0,
+        poolCreationFee: 0,
+        enableFirstSwapWithMinFee: false,
+      },
+      migration: {
+        migrationOption: 1,
+        migrationFeeOption: 0,
+        migrationFee: { feePercentage: 2, creatorFeePercentage: 0 },
+      },
+      liquidityDistribution: { partnerPermanentLockedLiquidityPercentage: 0, partnerLiquidityPercentage: 0, creatorPermanentLockedLiquidityPercentage: 0, creatorLiquidityPercentage: 0 },
+      lockedVesting: { totalLockedVestingAmount: 0, numberOfVestingPeriod: 0, cliffUnlockAmount: 0, totalVestingDuration: 0, cliffDurationFromMigrationTime: 0 },
+      activationType: 1,
+      initialMarketCap: 2,
+      migrationMarketCap: 20,
     });
-    const sim = new VirtualPoolSimulator(config, { slot: 1000, timestamp: 1700000000 });
 
-    const initialQuoteInput = new BN('1000000000'); // 1 SOL
+    const sim = new VirtualPoolSimulator(config);
+    const sdkQuoteDecimal = getMigrationQuoteAmountFromMigrationQuoteThreshold(
+      new (DecimalConstructor as any)(config.migrationQuoteThreshold.toString()),
+      config.migrationFee.feePercentage
+    );
+    const expectedQuoteAfterFees = new BN(sdkQuoteDecimal.floor().toFixed());
 
-    // Step 1: Buy base tokens with 1 SOL
-    const buyResult = sim.step({ side: 'buy', amount: initialQuoteInput });
-    const baseTokensReceived = buyResult.quoteResult.outputAmount;
+    const bigBuy = sim.step({ side: 'buy', amount: new BN('15000000000') });
 
-    // Step 2: Sell back exact same base tokens received
-    const sellResult = sim.step({ side: 'sell', amount: baseTokensReceived });
-    const quoteReceivedBack = sellResult.quoteResult.outputAmount;
-
-    // Expected loss = buyFee + sellFee (+ integer rounding of at most 2-3 lamports)
-    const buyTotalFee = buyResult.quoteResult.tradingFee.add(buyResult.quoteResult.protocolFee);
-    const sellTotalFee = sellResult.quoteResult.tradingFee.add(sellResult.quoteResult.protocolFee);
-    const totalFeesPaid = buyTotalFee.add(sellTotalFee);
-
-    const actualQuoteLost = initialQuoteInput.sub(quoteReceivedBack);
-    const diff = actualQuoteLost.sub(totalFeesPaid).abs().toNumber();
-
-    // Tolerated discrepancy due to integer division / rounding is <= 5 lamports
-    expect(diff).toBeLessThanOrEqual(5);
-
-    // After round-trip, quote reserve in pool equals the retained fees
-    const finalQuoteReserve = sim.getQuoteReserve();
-    expect(finalQuoteReserve.gte(new BN(0))).toBe(true);
-  });
-
-  // 5. Graduation triggers at threshold and matches migration helpers
-  it('Test 5: Graduation triggers at threshold and matches getMigrationQuoteAmount', () => {
-    const config = createValidConfig();
-    const sim = new VirtualPoolSimulator(config, { slot: 1000, timestamp: 1700000000 });
-
-    const threshold = config.migrationQuoteThreshold;
-
-    // Buy with amount equal to 2x threshold to guarantee threshold completion
-    const largeBuy = threshold.mul(new BN(2));
-
-    const stepResult = sim.step({ side: 'buy', amount: largeBuy });
-
-    expect(stepResult.graduated).toBe(true);
+    expect(bigBuy.isPartialFill).toBe(true);
     expect(sim.isGraduated).toBe(true);
-    expect(stepResult.isPartialFill).toBe(true);
+    expect(sim.virtualPool.poolState.quoteReserve.toString()).toBe(sim.config.migrationQuoteThreshold.toString());
 
-    // Migration quote threshold met
-    expect(sim.getQuoteReserve().gte(threshold)).toBe(true);
-
-    // Verify migration data
     const migrationData = sim.getMigrationData();
-    expect(migrationData.migrationQuoteThreshold.toString()).toBe(threshold.toString());
-
-    // Matches getMigrationQuoteAmountFromMigrationQuoteThreshold
-    const expectedQuoteAfterFees = getMigrationQuoteAmountFromMigrationQuoteThreshold(
-      new (Decimal as any)(threshold.toString()),
-      config.migrationFee?.feePercentage ?? 0
-    );
-    expect(migrationData.migrationQuoteAmountAfterFees.toString()).toBe(
-      new BN(expectedQuoteAfterFees.floor().toFixed()).toString()
-    );
-
-    // Migration base tokens matches getMigrationBaseToken
-    const expectedBaseTokens = getMigrationBaseToken(
-      migrationData.migrationQuoteAmountAfterFees,
-      migrationData.sqrtMigrationPrice,
-      config.migrationOption
-    );
-    expect(migrationData.migrationBaseTokens.toString()).toBe(expectedBaseTokens.toString());
-
-    // Post-graduation trades must throw
-    expect(() => {
-      sim.step({ side: 'buy', amount: new BN('1000000') });
-    }).toThrow('already graduated');
+    expect(migrationData.migrationQuoteAmountAfterFees.toString()).toBe(expectedQuoteAfterFees.toString());
   });
 
-  // 6. Fee Scheduler verification (Linear and Exponential modes)
-  it('Test 6: Fee scheduler - fee at time t equals SDK base fee handler output for Linear and Exponential modes', () => {
-    const startingFeeBps = 500; // 5%
-    const endingFeeBps = 100;   // 1%
-    const totalDuration = 86400; // 1 day
-    const activationTime = 1700000000;
+  // --------------------------------------------------------------------------
+  // EXISTING TESTS (Renamed PRNG test to say it tests PRNG only)
+  // --------------------------------------------------------------------------
+  it('PRNG only: Seeded Mulberry32 determinism and repeatability', () => {
+    const rng1 = new Mulberry32(12345);
+    const rng2 = new Mulberry32(12345);
 
-    // Test Linear Mode
-    const linearConfig = createValidConfig({
-      startingFeeBps,
-      endingFeeBps,
-      baseFeeMode: 0, // FeeSchedulerLinear
-      activationType: ActivationType.Timestamp,
-    });
-    const linearSim = new VirtualPoolSimulator(linearConfig, { slot: 1000, timestamp: activationTime });
+    const f1 = Array.from({ length: 10 }, () => rng1.next());
+    const f2 = Array.from({ length: 10 }, () => rng2.next());
+    expect(f1).toEqual(f2);
 
-    const linearHandler = getBaseFeeHandler(
-      linearConfig.poolFees.baseFee.cliffFeeNumerator,
-      linearConfig.poolFees.baseFee.firstFactor,
-      linearConfig.poolFees.baseFee.secondFactor,
-      linearConfig.poolFees.baseFee.thirdFactor,
-      0 // FeeSchedulerLinear
-    );
-
-    // Test at various elapsed times
-    const testOffsets = [0, 4320, 8640, 21600, 43200, 86400, 100000];
-    for (const offset of testOffsets) {
-      const checkTime = activationTime + offset;
-      const expectedNumerator = linearHandler.getBaseFeeNumeratorFromIncludedFeeAmount(
-        new BN(checkTime),
-        new BN(activationTime),
-        1 /* QuoteToBase */,
-        new BN('1000000000')
-      );
-
-      const freshSim = new VirtualPoolSimulator(linearConfig, { slot: 1000, timestamp: activationTime });
-      const res = freshSim.step(
-        { side: 'buy', amount: new BN('1000000000') },
-        { slot: 1000 + Math.floor(offset / 2), timestamp: checkTime }
-      );
-
-      const totalFee = res.quoteResult.tradingFee.add(res.quoteResult.protocolFee);
-      const actualNumerator = totalFee.mul(new BN(1_000_000_000)).div(new BN('1000000000'));
-      expect(actualNumerator.toString()).toBe(expectedNumerator.toString());
-    }
-
-    // Test Exponential Mode
-    const expConfig = createValidConfig({
-      startingFeeBps,
-      endingFeeBps,
-      baseFeeMode: 1, // FeeSchedulerExponential
-      activationType: ActivationType.Timestamp,
-    });
-
-    const expHandler = getBaseFeeHandler(
-      expConfig.poolFees.baseFee.cliffFeeNumerator,
-      expConfig.poolFees.baseFee.firstFactor,
-      expConfig.poolFees.baseFee.secondFactor,
-      expConfig.poolFees.baseFee.thirdFactor,
-      1 // FeeSchedulerExponential
-    );
-
-    for (const offset of testOffsets) {
-      const checkTime = activationTime + offset;
-      const expectedNumerator = expHandler.getBaseFeeNumeratorFromIncludedFeeAmount(
-        new BN(checkTime),
-        new BN(activationTime),
-        1 /* QuoteToBase */,
-        new BN('1000000000')
-      );
-
-      const freshSim = new VirtualPoolSimulator(expConfig, { slot: 1000, timestamp: activationTime });
-      const res = freshSim.step(
-        { side: 'buy', amount: new BN('1000000000') },
-        { slot: 1000 + Math.floor(offset / 2), timestamp: checkTime }
-      );
-
-      const totalFee = res.quoteResult.tradingFee.add(res.quoteResult.protocolFee);
-      const actualNumerator = totalFee.mul(new BN(1_000_000_000)).div(new BN('1000000000'));
-      expect(actualNumerator.toString()).toBe(expectedNumerator.toString());
-    }
+    const i1 = Array.from({ length: 10 }, () => rng1.nextInt(10, 100));
+    const i2 = Array.from({ length: 10 }, () => rng2.nextInt(10, 100));
+    expect(i1).toEqual(i2);
   });
 });

@@ -56,3 +56,5 @@ export class SeededRng {
     return array;
   }
 }
+
+export { SeededRng as Mulberry32 };
