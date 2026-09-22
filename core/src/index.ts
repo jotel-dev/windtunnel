@@ -5,3 +5,4 @@ export * from './sim/pool.js';
 export * from './sim/damm.js';
 export * from './agents/index.js';
 export * from './scenario/index.js';
+export * from './scorecard/index.js';
