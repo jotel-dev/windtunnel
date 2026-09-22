@@ -6,7 +6,8 @@
   "scripts": {
     "explore": "tsx explore.ts",
     "build": "tsc",
-    "test": "vitest run"
+    "test": "vitest run",
+    "compare": "tsx scripts/compare-demo.ts"
   },
   "dependencies": {
     "@meteora-ag/cp-amm-sdk": "^1.4.9",
