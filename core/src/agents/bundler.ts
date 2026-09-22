@@ -36,7 +36,7 @@ export function createBundlerAgent(config: BundlerConfig = {}): AgentFunction {
       return null;
     }
 
-    if (clock.slot !== cfg.targetSlot) {
+    if (clock.slot > cfg.targetSlot) {
       return null;
     }
 

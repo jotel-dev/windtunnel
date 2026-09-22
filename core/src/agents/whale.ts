@@ -60,10 +60,16 @@ export function createWhaleAgent(config: WhaleConfig = {}): AgentFunction {
     }
 
     const factor = Math.round(cfg.fractionOfRemainingThreshold * 10000);
-    const amount = remaining.muln(factor).divn(10000);
+    let amount = remaining.muln(factor).divn(10000);
 
+    // If calculated fraction drops below minQuoteAmount but remaining is small,
+    // sweep the remaining threshold to trigger graduation
     if (amount.lt(cfg.minQuoteAmount)) {
-      return null;
+      if (remaining.lte(cfg.minQuoteAmount.muln(10))) {
+        amount = remaining.add(cfg.minQuoteAmount);
+      } else {
+        return null;
+      }
     }
 
     return {
