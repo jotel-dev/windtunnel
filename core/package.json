@@ -9,6 +9,7 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@meteora-ag/cp-amm-sdk": "^1.4.9",
     "@meteora-ag/dynamic-bonding-curve-sdk": "^1.5.12",
     "@solana/web3.js": "^1.99.0"
   },
