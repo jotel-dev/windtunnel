@@ -507,6 +507,7 @@ export class VirtualPoolSimulator {
       baseReserve: this.virtualPool.poolState.baseReserve.clone(),
       totalBaseTokensSold: baseSold,
       totalBaseTokensForCurve: this.totalBaseTokensForCurve.clone(),
+      migrationQuoteThreshold: this.config.migrationQuoteThreshold.clone(),
       isGraduated: this._isGraduated,
       tradesExecuted: this._tradesExecuted,
       accumulatedFees: this.accumulatedFees,

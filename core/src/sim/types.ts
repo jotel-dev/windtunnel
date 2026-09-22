@@ -110,6 +110,7 @@ export interface SimulatorStateSnapshot {
   baseReserve: BN;
   totalBaseTokensSold: BN;
   totalBaseTokensForCurve: BN;
+  migrationQuoteThreshold: BN;
   isGraduated: boolean;
   tradesExecuted: number;
   accumulatedFees: AccumulatedFees;

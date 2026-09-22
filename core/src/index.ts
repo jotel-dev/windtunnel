@@ -3,3 +3,4 @@ export * from './sim/rng.js';
 export * from './sim/volatility.js';
 export * from './sim/pool.js';
 export * from './sim/damm.js';
+export * from './agents/index.js';
