@@ -247,3 +247,81 @@ All curve builders return a complete `ConfigParameters` struct ready for on-chai
 | **Quotes** | Pure in-memory DBC quotes (`swapQuote2`) | **CONFIRMED** | `dist/index.js:731420` |
 | **Migration** | Full-range DAMM v2 liquidity [MIN, MAX] | **CONFIRMED** | `dist/index.js:72070` (`getMigrationBaseToken`) |
 | **Migration** | Pure in-memory DAMM v2 quotes via `@meteora-ag/cp-amm-sdk` | **CONFIRMED** | `@meteora-ag/cp-amm-sdk:1.4.9` (`swapQuoteExactInput`) |
+
+
+---
+
+## 8. DAMM v2 Post-Graduation Model (`@meteora-ag/cp-amm-sdk` Reconnaissance)
+
+In Phase 3, WindTunnel integrated `@meteora-ag/cp-amm-sdk` (version `1.4.9`) to accurately simulate post-graduation price discovery and liquidity depth on Meteora DAMM v2 (CP-AMM).
+
+### 8.1 Pure Quote Functions
+The CP-AMM SDK exposes pure in-memory quote functions that execute off-chain without an active RPC connection or transaction context:
+
+1. **`swapQuoteExactInput`** — **CONFIRMED**
+   - *Reference*: `node_modules/@meteora-ag/cp-amm-sdk/dist/index.d.ts:8988`
+   - *Signature*:
+     ```typescript
+     function swapQuoteExactInput(
+       pool: Pool,
+       currentPoint: BN,
+       amountIn: BN,
+       slippageBps: number,
+       aToB: boolean,
+       hasReferral: boolean,
+       tokenBaseDecimal: number,
+       tokenQuoteDecimal: number
+     ): Quote2Result
+     ```
+   - Returns `Quote2Result` containing `outputAmount`, `fee`, `compoundingFee`, `claimingFee`, `protocolFee`, `priceImpact`, and `amountLeft`.
+
+2. **`swapQuoteExactOutput`** — **CONFIRMED**
+   - *Reference*: `node_modules/@meteora-ag/cp-amm-sdk/dist/index.d.ts:9009`
+   - Pure quote for exact output swaps.
+
+3. **`swapQuotePartialInput`** — **CONFIRMED**
+   - *Reference*: `node_modules/@meteora-ag/cp-amm-sdk/dist/index.d.ts:9030`
+   - Handles partial fills when liquidity is insufficient to consume the entire input.
+
+### 8.2 Pool State Mutation & Execution
+1. **`applySwapResult`** — **CONFIRMED**
+   - *Reference*: `node_modules/@meteora-ag/cp-amm-sdk/dist/index.d.ts:8943`
+   - *Signature*:
+     ```typescript
+     function applySwapResult(
+       pool: Pool,
+       swapResult: Quote2Result,
+       feeMode: FeeMode,
+       tradeDirection: TradeDirection
+     ): BN
+     ```
+   - Computes and returns the next `sqrtPrice` after the swap is applied to the concentrated liquidity ticks, updating pool state.
+
+2. **`getFeeMode`** — **CONFIRMED**
+   - *Reference*: `node_modules/@meteora-ag/cp-amm-sdk/dist/index.d.ts:8565`
+   - Determines whether trading fees are levied on Token A or Token B based on `collectFeeMode` and trade direction.
+
+### 8.3 Fee Schedulers and Rate Limiters on DAMM v2
+1. **Fee Schedulers and Rate Limiters Supported on DAMM v2** — **CONFIRMED**
+   - *Reference*: `node_modules/@meteora-ag/cp-amm-sdk/dist/index.d.ts:8600` (`getBaseFeeHandlerFromPodAlignedData`)
+   - *Contrast with DBC*: While DBC pool creation rejects `BaseFeeMode.RateLimiter` via `assertConfigAllowsNewPool`, DAMM v2 natively supports all three modes (`PodAlignedFeeTimeScheduler`, `PodAlignedFeeRateLimiter`, and `PodAlignedFeeMarketCapScheduler`).
+   - Schedulers are encoded into a 32-byte pod-aligned buffer stored in `pool.baseFeeInfo.data` and decoded at runtime by `getBaseFeeHandlerFromPodAlignedData`.
+
+2. **Fee Denominator Scaling Difference** — **CONFIRMED**
+   - DBC SDK: `FEE_DENOMINATOR = 1,000,000,000` (1e9)
+   - CP-AMM SDK: `FEE_DENOMINATOR = 1,000,000,000,000` (1e12)
+   - Base fee BPS (where 10,000 bps = 100%) scales by `100,000,000` (1e8) to produce the fee numerator on CP-AMM (`feeNumerator = feeBps * 1e8`).
+
+### 8.4 Concentrated Liquidity Delta Math
+1. **`getAmountBFromLiquidityDeltaForConcentratedLiquidity`** — **CONFIRMED**
+   - *Reference*: `node_modules/@meteora-ag/cp-amm-sdk/dist/index.d.ts:8354`
+   - Computes the exact quote token amount required to effectuate a price change across a given liquidity parameter $L$. Used in `measureMigrationGap` to determine the quote depth needed to move spot price by 1%, 5%, and 10%.
+
+### 8.5 Post-Graduation Pool Construction from `getMigrationData()`
+1. **State Mapping** — **CONFIRMED** (Code/SDK math); **UNCONFIRMED** (Live Devnet)
+   - Starting `sqrtPrice`: set to `migrateSqrtPrice` derived from `getMigrationThresholdPrice` or DBC final spot price.
+   - Base liquidity (`tokenAAmount`): set to `migrationBaseSupply` (unspent tokens allocated for migration).
+   - Quote liquidity (`tokenBAmount`): set to `migrationQuoteAmountAfterFees` (migration quote threshold minus protocol migration fee).
+   - Initial Liquidity Parameter $L$:
+     $$L = \frac{\text{quoteAmountLamports} \cdot 2^{128}}{\text{sqrtPrice} - \text{MIN\_SQRT\_PRICE}}$$
+   - *Status*: The formula and constants match Meteora's SDK and CP-AMM smart contract implementations, but the end-to-end on-chain migration instruction flow remains **UNCONFIRMED on live devnet** until on-chain verification is conducted in subsequent phases.
