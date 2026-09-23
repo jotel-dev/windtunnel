@@ -192,12 +192,13 @@ async function main() {
   console.log('\nDerived Pool Address:', poolAddress.toBase58());
 
   console.log('Fetching on-chain pool state to verify...');
-  const poolData = await client.pool.getPoolWithConfig(poolAddress);
+  const poolData = await client.state.getPool(poolAddress);
+  if (!poolData) throw new Error('Pool not found on devnet');
   console.log('Pool successfully verified on devnet:');
-  console.log('  Base Reserve:', poolData.virtualPool.poolState.baseReserve.toString());
-  console.log('  Quote Reserve:', poolData.virtualPool.poolState.quoteReserve.toString());
-  console.log('  Sqrt Price:', poolData.virtualPool.poolState.sqrtPrice.toString());
-  console.log('  Activation Point:', poolData.virtualPool.poolState.activationPoint.toString());
+  console.log('  Base Reserve:', poolData.poolState.baseReserve.toString());
+  console.log('  Quote Reserve:', poolData.poolState.quoteReserve.toString());
+  console.log('  Sqrt Price:', poolData.poolState.sqrtPrice.toString());
+  console.log('  Activation Point:', poolData.poolState.activationPoint.toString());
 
   // 8. Save deployment addresses to .deployed.json
   const deploymentRecord = {

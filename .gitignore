@@ -7,3 +7,6 @@ dist
 
 .deployed.json
 core/.deployed.json
+
+.trade-results.json
+core/.trade-results.json
