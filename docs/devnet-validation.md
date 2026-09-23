@@ -104,3 +104,46 @@ if elapsed >= total_duration { fee = ending_fee; }
 - The DBC on-chain bonding curve dynamics match our `VirtualPoolSimulator` equations.
 - The 3-way fee split (Protocol 20%, Creator 20% of net, Partner 80% of net) is confirmed on-chain to the exact lamport.
 - Both buy and sell swaps work seamlessly through `client.pool.swap2`.
+
+
+---
+
+## 6. Phase 5 Part C: Pool Graduation & DAMM v2 Migration Verification
+
+### 6.1 Graduation Swap
+To transition the DBC pool to the graduation state (`migrationProgress = 2`), a final buy swap was executed:
+- **Quote In**: `100,000,000` lamports (0.1 SOL) with `SwapMode.PartialFill` (Mode 1).
+- **Behavior**: Partial fill allowed the contract to consume exactly the quote needed to reach the threshold (`83,763,558` lamports net) and refund the excess quote token back to the trader without hitting `InsufficientLiquidity (6033)`.
+- **Tx Signature**: [`5j2jb6EJykALhENftzKYRkXKJbe2hFskQ1JQcXsxdxCr8zhPPnnpY1uZnaHqS2yrjgCN2NgXd33y56WLb1FtbUgi`](https://explorer.solana.com/tx/5j2jb6EJykALhENftzKYRkXKJbe2hFskQ1JQcXsxdxCr8zhPPnnpY1uZnaHqS2yrjgCN2NgXd33y56WLb1FtbUgi?cluster=devnet)
+- **Resulting DBC State**:
+  - `migrationProgress`: `2` (Graduated / Ready to Migrate)
+  - `quoteReserve`: `175,703,088` lamports (Threshold: `175,703,087` lamports)
+  - Final DBC `sqrtPrice`: `13,043,817,825,332,782`
+
+### 6.2 On-Chain Migration to DAMM v2
+Migration was executed using the DBC SDK's `client.migration.migrateToDammV2`:
+- **Target DAMM v2 Config**: `2c4cYd4reUYVRAB9kUUkrq55VPyy2FNQ3FDL4o12JXmq` (canonical devnet config for `migrationFeeOption: 3` / FixedBps200).
+- **Migration Tx Signature**: [`tMXi4mVSqj6fJyFLsEphYbUG6JMQuXJ3EiZZ8eR2asgGk4tGsM7xkqYFHvLCiT6Q1dcGiK6xYdVJgvML4ZXvMuC`](https://explorer.solana.com/tx/tMXi4mVSqj6fJyFLsEphYbUG6JMQuXJ3EiZZ8eR2asgGk4tGsM7xkqYFHvLCiT6Q1dcGiK6xYdVJgvML4ZXvMuC?cluster=devnet)
+- **Deployed DAMM v2 Pool**: [`DyEz6XSvhDnmgjUcU4EHEDM27z4p9yGRHJaPFJH3wWHp`](https://explorer.solana.com/address/DyEz6XSvhDnmgjUcU4EHEDM27z4p9yGRHJaPFJH3wWHp?cluster=devnet)
+- **Token Vaults**:
+  - Token A Vault (Base WIND): `2opG599z4Can4owKfKZLefWGowX4PHDjTz45rkgJwTim`
+  - Token B Vault (Quote SOL): `HbyE3faUKcuPWb2utjrdjvTkqcJsgeWtU4cD91ynzZTv`
+
+### 6.3 DAMM v2 On-Chain State vs. WindTunnel Phase 3 Model
+
+| Parameter | On-Chain Value | WindTunnel Phase 3 Prediction | Match? |
+| :--- | :--- | :--- | :--- |
+| **Starting Sqrt Price** | `13,043,817,825,332,782` | `13,043,817,825,332,782` (DBC final spot price) | **EXACT MATCH** (0 delta) |
+| **Config `sqrtMinPrice`** | `4,295,048,016` | `MIN_SQRT_PRICE = 4295048016` | **EXACT MATCH** |
+| **Config `sqrtMaxPrice`** | `79,226,673,521,066,979,257,578,248,091` | `MAX_SQRT_PRICE = 79226673521066979257578248091` | **EXACT MATCH** |
+| **Liquidity Range** | `[MIN_SQRT_PRICE, MAX_SQRT_PRICE]` | Full-Range Concentrated Liquidity | **CONFIRMED** |
+| **Pool Liquidity ($L$)** | `4,483,022,041,703,389,930,996,411,811,566` | Full-range formula: $L = \frac{\Delta y \cdot 2^{128}}{\sqrt{P} - \sqrt{P_{min}}}$ | **CONFIRMED** |
+
+### 6.4 On-Chain LP Position Structure
+In Meteora DAMM v2, the migrated liquidity is represented as follows:
+- **Representation**: An on-chain `Position` account (`86DV2caaDUY3zjJCmsWPwzgQFbkSjmSnG53EAK5c7rgj`) indexed by an NFT mint (`CQyRG96am5m6fgcsgiuJamMhB28iLVGubQ2hTVEGu7iT`).
+- **Locking Mechanism**:
+  - `unlockedLiquidity`: `0`
+  - `vestedLiquidity`: `0`
+  - `permanentLockedLiquidity`: `4,483,022,041,703,389,930,996,411,811,566` (100% of pool liquidity)
+- The liquidity is permanently non-withdrawable, providing permanent on-chain depth for post-graduation trading.

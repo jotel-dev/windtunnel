@@ -245,7 +245,8 @@ All curve builders return a complete `ConfigParameters` struct ready for on-chai
 | **Fees** | FeeScheduler (Linear / Exponential) | **CONFIRMED** | `dist/index.js:242810` (`FeeScheduler`) |
 | **Fees** | Volatility Tracker state transition across blocks | **UNCONFIRMED** | No SDK function; isolated in `volatility.ts` |
 | **Quotes** | Pure in-memory DBC quotes (`swapQuote2`) | **CONFIRMED** | `dist/index.js:731420` |
-| **Migration** | Full-range DAMM v2 liquidity [MIN, MAX] | **CONFIRMED** | `dist/index.js:72070` (`getMigrationBaseToken`) |
+| **Migration** | Full-range DAMM v2 liquidity [MIN, MAX] | **CONFIRMED** | `dist/index.js:72070` & Devnet Tx `tMXi4mVSqj...` |
+| **Migration** | End-to-end DBC to DAMM v2 Migration Flow | **CONFIRMED** | Devnet Pool `DyEz6XSvh...` & `migrateToDammV2` |
 | **Migration** | Pure in-memory DAMM v2 quotes via `@meteora-ag/cp-amm-sdk` | **CONFIRMED** | `@meteora-ag/cp-amm-sdk:1.4.9` (`swapQuoteExactInput`) |
 
 
@@ -317,11 +318,20 @@ The CP-AMM SDK exposes pure in-memory quote functions that execute off-chain wit
    - *Reference*: `node_modules/@meteora-ag/cp-amm-sdk/dist/index.d.ts:8354`
    - Computes the exact quote token amount required to effectuate a price change across a given liquidity parameter $L$. Used in `measureMigrationGap` to determine the quote depth needed to move spot price by 1%, 5%, and 10%.
 
-### 8.5 Post-Graduation Pool Construction from `getMigrationData()`
-1. **State Mapping** — **CONFIRMED** (Code/SDK math); **UNCONFIRMED** (Live Devnet)
-   - Starting `sqrtPrice`: set to `migrateSqrtPrice` derived from `getMigrationThresholdPrice` or DBC final spot price.
-   - Base liquidity (`tokenAAmount`): set to `migrationBaseSupply` (unspent tokens allocated for migration).
-   - Quote liquidity (`tokenBAmount`): set to `migrationQuoteAmountAfterFees` (migration quote threshold minus protocol migration fee).
+### 8.5 Post-Graduation Pool Construction from `getMigrationData()` — **CONFIRMED**
+1. **State Mapping & Live Devnet Verification** — **CONFIRMED**
+   - Starting `sqrtPrice`: set to DBC final spot price at graduation (`13,043,817,825,332,782` on devnet). Matches starting `sqrtPrice` of migrated DAMM v2 pool **exactly** to the integer unit.
+   - Base liquidity (`tokenAAmount`): deposited into DAMM v2 Token A vault (`2opG599z4Can4owKfKZLefWGowX4PHDjTz45rkgJwTim`).
+   - Quote liquidity (`tokenBAmount`): deposited into DAMM v2 Token B vault (`HbyE3faUKcuPWb2utjrdjvTkqcJsgeWtU4cD91ynzZTv`).
    - Initial Liquidity Parameter $L$:
-     $$L = \frac{\text{quoteAmountLamports} \cdot 2^{128}}{\text{sqrtPrice} - \text{MIN\_SQRT\_PRICE}}$$
-   - *Status*: The formula and constants match Meteora's SDK and CP-AMM smart contract implementations, but the end-to-end on-chain migration instruction flow remains **UNCONFIRMED on live devnet** until on-chain verification is conducted in subsequent phases.
+     $L = \frac{\text{quoteAmountLamports} \cdot 2^{128}}{\text{sqrtPrice} - \text{MIN\_SQRT\_PRICE}}$
+   - **Devnet On-Chain Evidence (Phase 5 Part C)**:
+     - DBC Pool: `2zJFqXFqoJDt7kvf1vpCXRa8qTS11ATNmy19TPZjRXBV`
+     - Graduation Swap Tx: `5j2jb6EJykALhENftzKYRkXKJbe2hFskQ1JQcXsxdxCr8zhPPnnpY1uZnaHqS2yrjgCN2NgXd33y56WLb1FtbUgi`
+     - Migration Tx: [`tMXi4mVSqj6fJyFLsEphYbUG6JMQuXJ3EiZZ8eR2asgGk4tGsM7xkqYFHvLCiT6Q1dcGiK6xYdVJgvML4ZXvMuC`](https://explorer.solana.com/tx/tMXi4mVSqj6fJyFLsEphYbUG6JMQuXJ3EiZZ8eR2asgGk4tGsM7xkqYFHvLCiT6Q1dcGiK6xYdVJgvML4ZXvMuC?cluster=devnet)
+     - DAMM v2 Pool Address: [`DyEz6XSvhDnmgjUcU4EHEDM27z4p9yGRHJaPFJH3wWHp`](https://explorer.solana.com/address/DyEz6XSvhDnmgjUcU4EHEDM27z4p9yGRHJaPFJH3wWHp?cluster=devnet)
+     - DAMM v2 Config Address: `2c4cYd4reUYVRAB9kUUkrq55VPyy2FNQ3FDL4o12JXmq`
+     - On-Chain Config `sqrtMinPrice`: `4295048016` (Matches Phase 3 model `MIN_SQRT_PRICE`: **true**)
+     - On-Chain Config `sqrtMaxPrice`: `79226673521066979257578248091` (Matches Phase 3 model `MAX_SQRT_PRICE`: **true**)
+     - On-Chain Pool Starting `sqrtPrice`: `13,043,817,825,332,782` (Matches DBC graduation price: **true**)
+     - Locked LP Position: Account `86DV2caaDUY3zjJCmsWPwzgQFbkSjmSnG53EAK5c7rgj` indexed by NFT Mint `CQyRG96am5m6fgcsgiuJamMhB28iLVGubQ2hTVEGu7iT` with `permanentLockedLiquidity = 4483022041703389930996411811566` (100% of pool liquidity locked permanently).

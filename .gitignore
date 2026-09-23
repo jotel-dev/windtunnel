@@ -10,3 +10,6 @@ core/.deployed.json
 
 .trade-results.json
 core/.trade-results.json
+
+.migration-results.json
+core/.migration-results.json
