@@ -6,3 +6,4 @@ export * from './sim/damm.js';
 export * from './agents/index.js';
 export * from './scenario/index.js';
 export * from './scorecard/index.js';
+export * from './tuner/index.js';
