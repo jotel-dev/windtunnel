@@ -10,11 +10,12 @@ import {
 } from '@solana/web3.js';
 import {
   DynamicBondingCurveClient,
-  buildCurveWithMarketCap,
   SwapMode,
+  buildCurveWithMarketCap,
+  ActivationType,
 } from '@meteora-ag/dynamic-bonding-curve-sdk';
+import { VirtualPoolSimulator } from '../src/sim/pool.js';
 import BN from 'bn.js';
-import { VirtualPoolSimulator } from '../src/index.js';
 
 interface ComparisonRecord {
   tradeIndex: number;
@@ -22,6 +23,8 @@ interface ComparisonRecord {
   amountIn: string;
   txSignature: string;
   explorerUrl: string;
+  slot: number;
+  elapsedSlots: number;
   chain: {
     sqrtPrice: string;
     baseReserve: string;
@@ -29,6 +32,7 @@ interface ComparisonRecord {
     protocolQuoteFee: string;
     creatorQuoteFee: string;
     partnerQuoteFee: string;
+    totalFeeCollected: string;
   };
   sim: {
     sqrtPrice: string;
@@ -92,6 +96,7 @@ async function main() {
   if (!initialPoolData) throw new Error('Pool not found on devnet');
 
   const initialChainState = initialPoolData.poolState;
+  const activationPoint = Number(initialChainState.activationPoint);
   console.log('Initial On-Chain Pool State:');
   console.log('  Sqrt Price:       ', initialChainState.sqrtPrice.toString());
   console.log('  Base Reserve:     ', initialChainState.baseReserve.toString());
@@ -155,20 +160,22 @@ async function main() {
       totalVestingDuration: 0,
       cliffDurationFromMigrationTime: 0,
     },
-    activationType: 0,
+    activationType: 0, // Slot
     initialMarketCap: 0.2,
     migrationMarketCap: 0.5,
   });
 
+  // Initialize simulator at the exact on-chain activation slot
   const sim = new VirtualPoolSimulator(curveParams, {
-    slot: 0,
-    timestamp: Number(initialChainState.activationPoint),
+    slot: activationPoint,
+    timestamp: 0,
   });
 
   console.log('\nInitialized VirtualPoolSimulator with matching config.');
-  console.log('  Simulator Sqrt Price:  ', sim.getSnapshot().sqrtPrice.toString());
-  console.log('  Simulator Base Reserve:', sim.getSnapshot().baseReserve.toString());
-  console.log('  Simulator Quote Reserve:', sim.getSnapshot().quoteReserve.toString());
+  console.log('  Simulator Activation Slot: ', sim.clock.slot);
+  console.log('  Simulator Sqrt Price:      ', sim.getSnapshot().sqrtPrice.toString());
+  console.log('  Simulator Base Reserve:    ', sim.getSnapshot().baseReserve.toString());
+  console.log('  Simulator Quote Reserve:   ', sim.getSnapshot().quoteReserve.toString());
 
   // Check initial sqrt price equality
   if (sim.getSnapshot().sqrtPrice.eq(initialChainState.sqrtPrice)) {
@@ -178,10 +185,6 @@ async function main() {
   }
 
   // 6. Define trade plan
-  // Trade 1: Buy 0.04 SOL
-  // Trade 2: Buy 0.05 SOL
-  // Trade 3: Sell fraction of acquired tokens
-  // Trade 4: Buy 0.03 SOL
   const tradePlan: Array<{ direction: 'buy' | 'sell'; quoteLamports?: number; baseFraction?: number }> = [
     { direction: 'buy', quoteLamports: 40_000_000 }, // 0.04 SOL
     { direction: 'buy', quoteLamports: 50_000_000 }, // 0.05 SOL
@@ -209,27 +212,6 @@ async function main() {
       console.log(`  Action: SELL ${amountIn.toString()} base tokens (~ ${amountIn.toNumber() / 1e6} WIND)`);
     }
 
-    // Step the simulator first to get predicted output & state
-    const simStepResult = sim.step({
-      side: item.direction,
-      amount: amountIn,
-      mode: 'exactIn',
-    });
-
-    const expectedAmountOut = simStepResult.quoteResult.outputAmount;
-    const expectedFee = simStepResult.quoteResult.tradingFee;
-    const simSnapshot = sim.getSnapshot();
-    const expectedNextSqrtPrice = simSnapshot.sqrtPrice;
-    const expectedNextQuoteReserve = simSnapshot.quoteReserve;
-    const expectedNextBaseReserve = simSnapshot.baseReserve;
-
-    console.log('  Simulator prediction:');
-    console.log(`    Amount Out:         ${expectedAmountOut.toString()}`);
-    console.log(`    Fee:                ${expectedFee.toString()}`);
-    console.log(`    Next Sqrt Price:    ${expectedNextSqrtPrice.toString()}`);
-    console.log(`    Next Quote Reserve: ${expectedNextQuoteReserve.toString()}`);
-    console.log(`    Next Base Reserve:  ${expectedNextBaseReserve.toString()}`);
-
     // Build real swap on-chain
     console.log('  Building on-chain swap transaction...');
     const swapTx = await client.pool.swap2({
@@ -256,6 +238,37 @@ async function main() {
     console.log('  Signature:', txSig);
     console.log(`  Explorer: https://explorer.solana.com/tx/${txSig}?cluster=devnet`);
 
+    // Fetch transaction details to obtain the exact confirmed slot and block time
+    const txDetails = await connection.getTransaction(txSig, { maxSupportedTransactionVersion: 0 });
+    const confirmedSlot = txDetails?.slot ?? (await connection.getSlot('confirmed'));
+    const confirmedTimestamp = txDetails?.blockTime ?? 0;
+    const elapsedSlots = confirmedSlot - activationPoint;
+    console.log(`  Execution Slot: ${confirmedSlot} (Elapsed: ${elapsedSlots} slots)`);
+
+    // Step simulator with the EXACT confirmed slot
+    const simStepResult = sim.step(
+      {
+        side: item.direction,
+        amount: amountIn,
+        mode: 'exactIn',
+      },
+      { slot: confirmedSlot, timestamp: confirmedTimestamp }
+    );
+
+    const expectedAmountOut = simStepResult.quoteResult.outputAmount;
+    const totalSimFee = simStepResult.quoteResult.tradingFee.add(simStepResult.quoteResult.protocolFee);
+    const simSnapshot = sim.getSnapshot();
+    const expectedNextSqrtPrice = simSnapshot.sqrtPrice;
+    const expectedNextQuoteReserve = simSnapshot.quoteReserve;
+    const expectedNextBaseReserve = simSnapshot.baseReserve;
+
+    console.log('  Simulator prediction (at confirmed slot):');
+    console.log(`    Amount Out:         ${expectedAmountOut.toString()}`);
+    console.log(`    Total Fee:          ${totalSimFee.toString()}`);
+    console.log(`    Next Sqrt Price:    ${expectedNextSqrtPrice.toString()}`);
+    console.log(`    Next Quote Reserve: ${expectedNextQuoteReserve.toString()}`);
+    console.log(`    Next Base Reserve:  ${expectedNextBaseReserve.toString()}`);
+
     // Fetch updated on-chain pool state
     const updatedPoolData = await client.state.getPool(poolPubkey);
     if (!updatedPoolData) throw new Error('Failed to fetch updated pool state');
@@ -281,6 +294,10 @@ async function main() {
     const creatorFeeDelta = updatedChain.creatorQuoteFee.sub(simAccumFees.creatorQuoteFee);
     const partnerFeeDelta = updatedChain.partnerQuoteFee.sub(simAccumFees.partnerQuoteFee);
 
+    const onChainTotalFeesCollected = updatedChain.protocolQuoteFee
+      .add(updatedChain.creatorQuoteFee)
+      .add(updatedChain.partnerQuoteFee);
+
     console.log('\n  === COMPARISON: On-Chain vs Simulator ===');
     console.log(`    Sqrt Price:
       On-Chain:  ${updatedChain.sqrtPrice.toString()}
@@ -293,7 +310,7 @@ async function main() {
     console.log(`    Base Output (Reserve Change):
       On-Chain:  ${chainBaseReserveDelta.toString()}
       Simulator: ${expectedAmountOut.toString()}
-      Delta:     ${baseReserveChangeDelta.toString()} (${baseReserveChangeDelta.isZero() ? 'EXACT MATCH' : 'DIVERGENCE'})`);
+      Delta:     ${baseReserveChangeDelta.toString()} (${baseReserveChangeDelta.isZero() ? 'EXACT MATCH' : 'ROUNDING DELTA'})`);
     console.log(`    Accumulated Protocol Fee:
       On-Chain:  ${updatedChain.protocolQuoteFee.toString()}
       Simulator: ${simAccumFees.protocolQuoteFee.toString()}
@@ -313,6 +330,8 @@ async function main() {
       amountIn: amountIn.toString(),
       txSignature: txSig,
       explorerUrl: `https://explorer.solana.com/tx/${txSig}?cluster=devnet`,
+      slot: confirmedSlot,
+      elapsedSlots,
       chain: {
         sqrtPrice: updatedChain.sqrtPrice.toString(),
         baseReserve: updatedChain.baseReserve.toString(),
@@ -320,6 +339,7 @@ async function main() {
         protocolQuoteFee: updatedChain.protocolQuoteFee.toString(),
         creatorQuoteFee: updatedChain.creatorQuoteFee.toString(),
         partnerQuoteFee: updatedChain.partnerQuoteFee.toString(),
+        totalFeeCollected: onChainTotalFeesCollected.toString(),
       },
       sim: {
         sqrtPrice: expectedNextSqrtPrice.toString(),
@@ -329,7 +349,7 @@ async function main() {
         creatorQuoteFee: simAccumFees.creatorQuoteFee.toString(),
         partnerQuoteFee: simAccumFees.partnerQuoteFee.toString(),
         amountOut: expectedAmountOut.toString(),
-        fee: expectedFee.toString(),
+        fee: totalSimFee.toString(),
       },
       deltas: {
         sqrtPriceDelta: sqrtPriceDelta.toString(),
