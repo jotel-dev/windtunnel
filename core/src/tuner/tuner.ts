@@ -168,22 +168,22 @@ export function tune(
   const evaluatedCandidates: TunedCandidate[] = [];
 
   const inferred = Array.isArray(agentMix) ? inferPreset(agentMix) : null;
-  const getFreshAgents = (): NamedAgent[] => {
+  const getFreshAgents = (config: ConfigParameters): NamedAgent[] => {
     if (typeof agentMix === 'string') {
-      return createAgentMix(agentMix);
+      return createAgentMix(agentMix, { config });
     }
     if (typeof agentMix === 'function') {
-      return agentMix();
+      return (agentMix as any)(config);
     }
     if (inferred) {
-      return createAgentMix(inferred);
+      return createAgentMix(inferred, { config });
     }
     return agentMix;
   };
 
   const evaluate = (sampled: SampledConfig, generation: number): TunedCandidate => {
     // Run scenario with identical trader arrivals for fair fitness comparison
-    const agents = getFreshAgents();
+    const agents = getFreshAgents(sampled.config);
     const scenarioResult = runScenario(
       sampled.config,
       agents,

@@ -76,10 +76,10 @@ async function main() {
     },
     activationType: 0,
     initialMarketCap: 20,
-    migrationMarketCap: 30,
+    migrationMarketCap: 40,
   });
 
-  const baselineAgents = createAgentMix('coordinated snipers');
+  const baselineAgents = createAgentMix('coordinated snipers', { config: baselineConfig });
   const baselineScenario = runScenario(baselineConfig, baselineAgents, scenarioSeed, {
     maxTicks: 300,
     postGradTicks: 30,
@@ -102,12 +102,12 @@ async function main() {
     feeScheduler: {
       startingFeeBps: { min: 400, max: 2500, step: 50 },  // 4% to 25% starting fee (sniper barrier)
       endingFeeBps: { min: 50, max: 300, step: 25 },       // 0.5% to 3% ending fee floor
-      totalDuration: { min: 200, max: 2000, step: 100 },   // 200 to 2000 slots decay duration
+      totalDuration: { min: 300, max: 2000, step: 100 },   // 300 to 2000 slots decay duration
       numberOfPeriod: { min: 5, max: 20 },
     },
     curveShape: {
-      initialMarketCap: { min: 2.0, max: 30.0, step: 1.0 }, // 2 to 30 SOL
-      migrationMarketCap: { min: 25.0, max: 100.0, step: 2.0 }, // 25 to 100 SOL
+      initialMarketCap: { min: 15.0, max: 25.0, step: 1.0 }, // 15 to 25 SOL initial MC (realistic DBC launch)
+      migrationMarketCap: { min: 35.0, max: 70.0, step: 2.0 }, // 35 to 70 SOL (2x to 3.5x expansion ratio)
       totalTokenSupply: 1_000_000_000,
       leftover: 100_000_000,
     },

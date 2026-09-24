@@ -33,7 +33,7 @@ export function compareConfigs(
 
   for (const entry of configs) {
     // Re-instantiate agents fresh per config when given a preset string to reset internal memory
-    const agents = typeof agentMix === 'string' ? createAgentMix(agentMix) : agentMix;
+    const agents = typeof agentMix === 'string' ? createAgentMix(agentMix, { config: entry.config }) : agentMix;
     const scenarioResult = runScenario(entry.config, agents, seed, options);
     const scorecard = compute(scenarioResult, options);
 

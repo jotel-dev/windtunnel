@@ -1,6 +1,8 @@
 import BN from 'bn.js';
 import type { NamedAgent } from '../agents/types.js';
 import type { AgentMixPreset } from './types.js';
+import type { ConfigParameters } from '../sim/types.js';
+import { getMigrationThresholdPrice, getPriceFromSqrtPrice } from '@meteora-ag/dynamic-bonding-curve-sdk';
 import {
   createSniperAgent,
   createBundlerAgent,
@@ -11,6 +13,7 @@ import {
 
 export interface AgentMixOptions {
   referencePrice?: number;
+  config?: ConfigParameters;
 }
 
 /**
@@ -20,7 +23,23 @@ export function createAgentMix(
   preset: AgentMixPreset,
   options: AgentMixOptions = {}
 ): NamedAgent[] {
-  const refPrice = options.referencePrice ?? 0.0000005;
+  let refPrice = options.referencePrice;
+  if (!refPrice && options.config) {
+    try {
+      const sqrtMig = getMigrationThresholdPrice(
+        options.config.migrationQuoteThreshold,
+        options.config.sqrtStartPrice,
+        options.config.curve
+      );
+      const pGrad = parseFloat(getPriceFromSqrtPrice(sqrtMig, 6, 9).toString());
+      refPrice = pGrad * 1.05;
+    } catch {
+      // Fallback
+    }
+  }
+  if (!refPrice) {
+    refPrice = 0.000000045; // Default ~45 SOL graduation price on 1B token supply
+  }
 
   switch (preset) {
     case 'light retail':
@@ -120,8 +139,19 @@ export function createAgentMix(
           type: 'momentum',
           act: createMomentumAgent({
             lookbackTicks: 4,
-            thresholdPct: 0.03,
-            baseTradeSizeQuote: new BN('50000000'),
+            thresholdPct: 0.02,
+            baseTradeSizeQuote: new BN('80000000'),
+          }),
+        },
+        {
+          id: 'organic-retail-flow',
+          name: 'Organic Retail Buyers',
+          type: 'whale',
+          act: createWhaleAgent({
+            intervalMin: 4,
+            intervalMax: 12,
+            fractionOfRemainingThreshold: 0.15,
+            maxSlippageBps: 500,
           }),
         },
         {
@@ -131,7 +161,7 @@ export function createAgentMix(
           act: createArbitrageurAgent({
             referencePrice: refPrice,
             minProfitBps: 30,
-            maxCapitalQuote: new BN('5000000000'),
+            maxCapitalQuote: new BN('2000000000'),
           }),
         },
       ];
