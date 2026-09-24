@@ -1,0 +1,32 @@
+{
+  "name": "web",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --webpack",
+    "build": "next build --webpack",
+    "start": "next start",
+    "lint": "eslint"
+  },
+  "dependencies": {
+    "@meteora-ag/cp-amm-sdk": "^1.4.10",
+    "@meteora-ag/dynamic-bonding-curve-sdk": "^1.5.12",
+    "@solana/web3.js": "^1.99.0",
+    "bn.js": "^5.2.5",
+    "next": "16.3.6",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "windtunnel-core": "file:../core"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@types/bn.js": "^5.2.0",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.3.6",
+    "tailwindcss": "^4",
+    "typescript": "^5"
+  }
+}

@@ -1,0 +1,134 @@
+@import "tailwindcss";
+
+@theme {
+  --color-cream: #F7F3EC;
+  --color-blush: #F3D9E8;
+  --color-mint: #B8E0D2;
+  --color-coral: #F4805D;
+  --color-coral-dark: #E26E4B;
+  --color-butter: #FCE8AA;
+  --color-sky: #CDE4FE;
+  --color-lavender: #E4D8FC;
+  --color-charcoal: #171717;
+
+  --font-serif: var(--font-fraunces), Georgia, serif;
+  --font-sans: var(--font-inter), system-ui, -apple-system, sans-serif;
+
+  --shadow-hard: 4px 4px 0 #000000;
+  --shadow-hard-sm: 2px 2px 0 #000000;
+  --shadow-hard-lg: 6px 6px 0 #000000;
+}
+
+:root {
+  --bg-cream: #F7F3EC;
+  --bg-blush: #F3D9E8;
+  --bg-mint: #B8E0D2;
+  --color-coral: #F4805D;
+}
+
+body {
+  background-color: #F7F3EC;
+  color: #171717;
+  font-family: var(--font-inter), system-ui, -apple-system, sans-serif;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+h1, h2, h3, .font-display {
+  font-family: var(--font-fraunces), Georgia, serif;
+  letter-spacing: -0.02em;
+}
+
+/* Hard outline cards */
+.card-neo {
+  background-color: #ffffff;
+  border: 2px solid #000000;
+  box-shadow: 4px 4px 0 #000000;
+  border-radius: 14px;
+}
+
+.card-neo-sm {
+  background-color: #ffffff;
+  border: 2px solid #000000;
+  box-shadow: 2px 2px 0 #000000;
+  border-radius: 10px;
+}
+
+.card-neo-lg {
+  background-color: #ffffff;
+  border: 2px solid #000000;
+  box-shadow: 6px 6px 0 #000000;
+  border-radius: 16px;
+}
+
+/* Primary Coral Button */
+.btn-primary {
+  background-color: #F4805D;
+  border: 2px solid #000000;
+  color: #000000;
+  box-shadow: 4px 4px 0 #000000;
+  font-weight: 600;
+  border-radius: 12px;
+  padding: 0.625rem 1.25rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
+  user-select: none;
+}
+.btn-primary:hover:not(:disabled) {
+  transform: translate(-1px, -1px);
+  box-shadow: 5px 5px 0 #000000;
+  background-color: #f78d6d;
+}
+.btn-primary:active:not(:disabled) {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0 #000000;
+}
+.btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Secondary Button */
+.btn-secondary {
+  background-color: #ffffff;
+  border: 2px solid #000000;
+  color: #000000;
+  font-weight: 600;
+  border-radius: 12px;
+  padding: 0.625rem 1.25rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: all 0.15s ease-in-out;
+  cursor: pointer;
+  user-select: none;
+}
+.btn-secondary:hover:not(:disabled) {
+  background-color: #F7F3EC;
+  transform: translate(-1px, -1px);
+  box-shadow: 3px 3px 0 #000000;
+}
+.btn-secondary:active:not(:disabled) {
+  transform: translate(1px, 1px);
+  box-shadow: 1px 1px 0 #000000;
+}
+
+/* Badge Pill */
+.badge-neo {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  border: 1.5px solid #000000;
+  border-radius: 9999px;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
