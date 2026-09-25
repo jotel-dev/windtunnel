@@ -4,34 +4,34 @@ import React from 'react';
 
 export function Navbar() {
   return (
-    <header className="sticky top-0 z-50 bg-[#F7F3EC]/95 border-b-2 border-black backdrop-blur-sm">
+    <header className="sticky top-0 z-50 bg-[#0D1117]/95 border-b-2 border-[#30363D] backdrop-blur-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-[#F4805D] border-2 border-black flex items-center justify-center font-serif font-black text-xl shadow-[2px_2px_0_#000]">
+          <div className="w-10 h-10 rounded-xl bg-[#F4805D] border-2 border-[#E6EDF3] flex items-center justify-center font-serif font-black text-xl text-[#0D1117] shadow-[2px_2px_0_rgba(230,237,243,0.25)]">
             W
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <span className="font-serif text-2xl font-bold tracking-tight">WindTunnel</span>
-              <span className="badge-neo bg-[#FCE8AA]">v0.1</span>
+              <span className="font-serif text-2xl font-bold tracking-tight text-white">WindTunnel</span>
+              <span className="badge-neo-solana text-[11px] py-0.5 px-2">v0.1</span>
             </div>
-            <span className="text-xs text-gray-600 font-medium hidden sm:inline-block">
+            <span className="text-xs text-[#8B949E] font-medium hidden sm:inline-block">
               Meteora DBC Flight Simulator
             </span>
           </div>
         </div>
 
-        <nav className="hidden md:flex items-center gap-6 text-sm font-semibold">
-          <a href="#simulator" className="hover:underline underline-offset-4 decoration-2">
+        <nav className="hidden md:flex items-center gap-6 text-sm font-semibold text-[#E6EDF3]">
+          <a href="#simulator" className="hover:text-[#14F195] hover:underline underline-offset-4 decoration-2 transition-colors">
             Simulator
           </a>
-          <a href="#compare" className="hover:underline underline-offset-4 decoration-2">
+          <a href="#compare" className="hover:text-[#14F195] hover:underline underline-offset-4 decoration-2 transition-colors">
             Compare
           </a>
-          <a href="#devnet" className="hover:underline underline-offset-4 decoration-2">
+          <a href="#devnet" className="hover:text-[#14F195] hover:underline underline-offset-4 decoration-2 transition-colors">
             On-Chain Proof
           </a>
-          <a href="#findings" className="hover:underline underline-offset-4 decoration-2">
+          <a href="#findings" className="hover:text-[#14F195] hover:underline underline-offset-4 decoration-2 transition-colors">
             Research Findings
           </a>
         </nav>

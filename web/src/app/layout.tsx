@@ -5,14 +5,12 @@ import "./globals.css";
 const fraunces = Fraunces({
   variable: "--font-fraunces",
   subsets: ["latin"],
-  weight: ["600", "700", "800"],
   display: "swap",
 });
 
 const inter = Inter({
   variable: "--font-inter",
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
   display: "swap",
 });
 
@@ -28,8 +26,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${fraunces.variable} ${inter.variable} scroll-smooth`}>
-      <body className="min-h-screen flex flex-col bg-[#F7F3EC] text-[#171717]">
+    <html lang="en" className={`${fraunces.variable} ${inter.variable} scroll-smooth dark`}>
+      <body className="min-h-screen flex flex-col bg-[#0D1117] text-[#E6EDF3]">
         {children}
       </body>
     </html>
