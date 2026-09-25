@@ -29,5 +29,8 @@
       "import": "./dist/src/index.js",
       "default": "./dist/src/index.js"
     }
+  },
+  "overrides": {
+    "rpc-websockets": "9.3.10"
   }
 }

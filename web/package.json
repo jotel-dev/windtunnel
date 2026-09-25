@@ -4,9 +4,10 @@
   "private": true,
   "scripts": {
     "dev": "next dev --webpack",
-    "build": "next build --webpack",
+    "build": "npm --prefix ../core run build && next build --webpack",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "prebuild": "npm --prefix ../core run build"
   },
   "dependencies": {
     "@meteora-ag/cp-amm-sdk": "^1.4.10",
@@ -28,5 +29,8 @@
     "eslint-config-next": "16.3.6",
     "tailwindcss": "^4",
     "typescript": "^5"
+  },
+  "overrides": {
+    "rpc-websockets": "9.3.10"
   }
 }

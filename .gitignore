@@ -13,3 +13,6 @@ core/.trade-results.json
 
 .migration-results.json
 core/.migration-results.json
+
+.vercel
+.env*
