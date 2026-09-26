@@ -1,0 +1,36 @@
+{
+  "config": "HRTdrgErgvNtBabEQjtZusdvkm7FXYipjGh8BEdRPECf",
+  "baseMint": "2M5bnNecFmnasuFKnq9NcX99fGwAvYKDWmVFjf3Qe7jZ",
+  "network": "mainnet-beta",
+  "configAddress": "HRTdrgErgvNtBabEQjtZusdvkm7FXYipjGh8BEdRPECf",
+  "configTxSig": "QWFUuhi9KjrA3Pd1v5srTsuP48KFg7C9TaFDUTKp7cJqev2hSKDrG1HAVm3aWcTct8XGhQVKkq8XuWA6fRHfgGq",
+  "configCostSol": 0.00598408,
+  "balanceAfterConfig": 0.04257453,
+  "configCreatedAt": "2026-09-26T10:37:23.028Z",
+  "poolAddress": "F5rMhAuXyc2qVWencT6Uc1H4DnxuJtCF6V1WJpNQ7PMV",
+  "poolTxSig": "d8gcWY4Looh4xht6Wss4Uqboiw1Ceih5vP3oQXbdG27BEgwXg4PanuRzygYUJBn6S4F5z3cTGB6K3HrU11YXUvW",
+  "poolCostSol": 0.02059164,
+  "balanceAfterPool": 0.02198289,
+  "poolCreatedAt": "2026-09-26T10:41:15.876Z",
+  "swap1": {
+    "txSig": "2TpaPqMqq4hZWQSb7HVXt3EhTeUzA8NEiU9mJML4GSms1CmGNFcTsiCS6XkUMX8sbYYu1MEmVbNRWyDW5FyXAngU",
+    "inputSol": 0.003,
+    "tokensReceived": "27814906.180632",
+    "rawTokensReceived": "27814906180632",
+    "effectivePriceSolPerToken": "1.078558e-10",
+    "tokensPerSol": 9271635393.543999,
+    "balanceAfter": 0.01748945,
+    "totalSpentSol": 0.00449344,
+    "timestamp": "2026-09-26T10:44:50.442Z"
+  },
+  "swap2": {
+    "txSig": "2njtYBv3aVngGGk5GUPE5GTtzoYpHWiLJFH9a1stmBNhKUch9AzTFhSgzb2qw5ToXm8DUm7T3SQ2P9nrkCdExrv1",
+    "inputSol": 0.003,
+    "tokensReceived": "19865223.24635",
+    "totalHoldingWIND": "47680129.426982",
+    "effectivePriceSolPerToken": "1.510177e-10",
+    "balanceAfter": 0.01448445,
+    "totalSpentSol": 0.003005,
+    "timestamp": "2026-09-26T10:50:53.471Z"
+  }
+}
