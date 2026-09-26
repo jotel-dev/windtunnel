@@ -1,6 +1,6 @@
 # WindTunnel 🌪️
 
-> Stress-test flight simulator and genetic config tuner for Meteora Dynamic Bonding Curves (DBC), validated bit-for-bit on Solana mainnet and devnet.
+> Stress-test flight simulator and config tuner for Meteora Dynamic Bonding Curves (DBC), validated bit-for-bit on Solana mainnet and devnet.
 
 [![Live Demo](https://img.shields.io/badge/Live_Demo-windtunnel--six.vercel.app-14F195?style=for-the-badge&logo=vercel)](https://windtunnel-six.vercel.app)
 [![Solana Mainnet](https://img.shields.io/badge/Solana-Mainnet--Beta%20Verified-00FFA3?style=for-the-badge&logo=solana)](https://explorer.solana.com/address/F5rMhAuXyc2qVWencT6Uc1H4DnxuJtCF6V1WJpNQ7PMV)
@@ -36,7 +36,7 @@ WindTunnel provides a full-stack flight simulator across four core capabilities:
    - `NoiseTraderAgent`: Stochastic background liquidity.
    - `ArbitrageurAgent`: Cross-pool price reconcilers.
 2. **DBC → DAMM v2 Migration-Gap Analyzer**: Measures price continuity, migration fees (protocol & creator splits), and the order book liquidity cliff across pool graduation.
-3. **Evolutionary Auto-Tuner**: An evolutionary genetic algorithm that searches the continuous DBC parameter space to optimize user-specified objectives (e.g. `protect-organic`, `creator-yield`, `whale-absorption`) across hundreds of simulated attack scenarios.
+3. **Evolutionary Auto-Tuner**: A two-stage evolutionary optimization search (`core/src/tuner/tuner.ts`). Generation 0 samples random candidate configurations across the continuous DBC parameter space (`core/src/tuner/space.ts`), evaluates them against adversarial scenarios, and selects the top-scoring elite candidates. Generation 1 mutates the parameters of those top performers within bounded perturbation ranges to converge on optimal fee barriers, decay rates, and curve dimensions for user-specified objectives (e.g. `protect-organic`, `creator-yield`).
 4. **Interactive Web Flight Simulator**: A Next.js web application ([windtunnel-six.vercel.app](https://windtunnel-six.vercel.app)) featuring side-by-side curve comparison, real-time adversarial playback, and interactive parameter tuning.
 
 ---
@@ -46,7 +46,7 @@ WindTunnel provides a full-stack flight simulator across four core capabilities:
 Through millions of simulated ticks and on-chain benchmarks, WindTunnel uncovered critical economic insights:
 
 - **67x – 79x Post-Graduation Slippage Jump**: A standard $1,000 buy order incurs **67x to 79x higher price impact** immediately after migration onto DAMM v2 compared to immediately before migration on the bonding curve. This occurs because migrated liquidity is deployed across the entire range (`MIN_SQRT_PRICE` to `MAX_SQRT_PRICE`), substantially diluting active depth near spot.
-- **Auto-Tuner Outperforms Hand-Picked Baselines (+6.28 pts)**: In head-to-head testing against coordinated sniper bundles, WindTunnel's auto-tuner discovered a 16.0% fee barrier with a 1,000-slot decay and 20% creator split that beat baseline configurations by **+6.28 objective points**, while driving a **+225% increase in creator fee capture** (from 0.126 SOL to 0.410 SOL) without choking organic buyers.
+- **Auto-Tuner Outperforms Hand-Picked Baselines (+6.28 pts)**: Running a 40-iteration two-stage evolutionary search against coordinated sniper bundles, the tuner's Generation 1 mutation refined a 16.0% fee barrier with a 1,000-slot linear decay and 20% creator split that beat baseline configurations by **+6.28 objective points**, while driving a **+225% increase in creator fee capture** (from 0.126 SOL to 0.410 SOL) without choking organic buyers.
 - **Exact-Match Devnet Validation (0 Lamport Delta)**: Across 4 consecutive devnet swaps, WindTunnel's discrete mathematical engine predicted on-chain `sqrtPrice`, base reserves, quote reserves, and 3-way fee splits with **exact 0-lamport delta** against the live Meteora DBC program.
 
 ---
@@ -76,23 +76,56 @@ WindTunnel is tested and verified on live Solana networks:
 windtunnel/
 ├── core/                           # Pure simulation & optimization engine
 │   ├── src/
-│   │   ├── sim/
-│   │   │   ├── simulator.ts        # In-memory Meteora DBC virtual curve
-│   │   │   ├── damm.ts             # Post-graduation DAMM v2 CP-AMM model
-│   │   │   ├── agents.ts           # 5 adversarial trader archetypes
-│   │   │   ├── runner.ts           # Scenario harness & discrete-event clock
-│   │   │   └── scorecard.ts        # Comprehensive launch scorecards
-│   │   ├── tuner/
-│   │   │   ├── optimizer.ts        # Evolutionary genetic tuner
-│   │   │   └── objectives.ts       # Fitness scoring functions
-│   ├── scripts/                    # Deployment, benchmark & tuning scripts
+│   │   ├── agents/                 # 5 adversarial trader archetypes
+│   │   │   ├── sniper.ts           # Slot-0 sniper extractor
+│   │   │   ├── bundler.ts          # Coordinated Jito MEV bundles
+│   │   │   ├── momentum.ts         # Retail trend-following buyers
+│   │   │   ├── whale.ts            # High-capital market orders
+│   │   │   └── arbitrageur.ts      # Cross-pool price reconciler
+│   │   ├── scenario/               # Discrete-event simulation runner
+│   │   │   ├── runner.ts           # Event loop, clock & step execution
+│   │   │   ├── agentMix.ts         # Pre-configured trader compositions
+│   │   │   └── compare.ts          # Multi-configuration comparison harness
+│   │   ├── sim/                    # Mathematical models & AMM mechanics
+│   │   │   ├── pool.ts             # In-memory Meteora DBC virtual curve
+│   │   │   ├── damm.ts             # Post-graduation DAMM v2 CP-AMM & migration gap
+│   │   │   ├── rng.ts              # Seeded Mulberry32 deterministic PRNG
+│   │   │   └── volatility.ts       # Stochastic price volatility models
+│   │   ├── scorecard/              # Multi-dimensional evaluation metrics
+│   │   │   └── compute.ts          # Sniper extraction, organic returns & fees
+│   │   ├── tuner/                  # Two-stage evolutionary parameter optimizer
+│   │   │   ├── space.ts            # Parameter search space & random sampling
+│   │   │   ├── objectives.ts       # Multi-objective fitness scoring functions
+│   │   │   └── tuner.ts            # Gen 0 sampling + Gen 1 elite mutation
+│   │   └── index.ts                # Public library exports
+│   ├── scripts/                    # CLI demos & on-chain deployment scripts
+│   │   ├── devnet-deploy.ts        # Devnet DBC config & pool creation
+│   │   ├── devnet-trade.ts         # Devnet swap observation harness
+│   │   ├── devnet-migrate.ts       # Devnet liquidity migration execution
+│   │   ├── stage1-create-config.cjs# Mainnet partner config creation
+│   │   ├── stage2-create-pool.cjs  # Mainnet DBC pool & mint initialization
+│   │   ├── stage3-swap1.cjs        # Mainnet real swap 1 (buy)
+│   │   ├── stage4-swap2.cjs        # Mainnet real swap 2 (buy)
+│   │   ├── tune-demo.ts            # CLI auto-tuner demonstration
+│   │   └── compare-demo.ts         # CLI 3-way launch comparison demo
 │   └── tests/                      # 37 hardened invariant & parity tests
 │
-├── web/                            # Interactive Next.js web application
+├── web/                            # Interactive Next.js web dashboard
 │   ├── src/app/                    # Next.js App Router & server simulation APIs
-│   └── src/components/             # Bold dark-theme dashboard & charts
+│   │   ├── api/simulate/route.ts   # Server-side simulation API endpoint
+│   │   └── api/compare/route.ts    # Server-side comparison API endpoint
+│   ├── src/components/             # Dark-theme dashboard & charts
+│   │   ├── Simulator.tsx           # Interactive curve flight simulator
+│   │   ├── CompareView.tsx         # Side-by-side launch comparison
+│   │   ├── DevnetVerified.tsx      # Mainnet traction & devnet parity proof
+│   │   └── Findings.tsx            # Empirical research findings cards
+│   └── src/lib/core.ts             # Server-side bindings to windtunnel-core
 │
 └── docs/                           # Empirical research papers & on-chain proof
+    ├── mainnet-launch.md           # Mainnet-beta ledger & real swap proof
+    ├── devnet-validation.md        # Devnet 0-delta mathematical parity proof
+    ├── migration-gap-findings.md   # Research paper on 67-79x liquidity jump
+    └── sdk-notes.md                # Meteora DBC SDK deep dive & bit math
 ```
 
 The Next.js frontend calls the simulation engine through server-side API routes (`/api/simulate`, `/api/compare`), guaranteeing 100% mathematical fidelity between the CLI and the web interface without duplicating code.
