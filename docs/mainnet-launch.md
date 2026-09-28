@@ -28,7 +28,7 @@ This document provides official on-chain proof for **Phase 8** of WindTunnel, es
 During Phase 6 automated genetic tuning, WindTunnel evaluated 40 parameter configurations in a two-stage search (Gen 0 random sampling + Gen 1 elite mutation) under coordinated sniper attacks (Jito bundle extraction). The top-performing preset—termed **"Protect-Organic" Anti-Sniper Fee Decay**—outperformed the hand-picked baseline by +6.28 objective points:
 
 - **16.0% Starting Fee Barrier (`startingFeeBps: 1600`)**: Creates an immediate friction barrier that taxes slot-0 MEV bundle snipers at 16%, redirecting revenue to the creator. In the coordinated-snipers scenario (seed 4242), sniper token share shifts from 38.2% to 37.2% while creator fees increase +225% (0.126 to 0.410 SOL).
-- **1,000 Slots Linear Decay (`totalDuration: 1000`)**: Fee smoothly decays over ~6.6 minutes on mainnet down to a 1.5% floor (`endingFeeBps: 150`).
+- **1,000 Slots Linear Decay (`totalDuration: 1000`)**: Fee smoothly decays over ~6.6 minutes on mainnet down to a 1.0% floor (`endingFeeBps: 100`). *(Note: The deployed config differs from the Phase 6 tuned preset—which uses a 150 bps floor and 15/39 SOL market caps—because the market caps were scaled down for budget.)*
 - **20% Creator Trading Fee Share (`creatorTradingFeePercentage: 20`)**: Channels 20% of all swap fees directly to the token creator/curator, tripling creator revenue compared to unprotected pools.
 - **~2.6x Expansion Ratio**: Initial market cap set to 0.10 SOL with a migration threshold of 0.26 SOL, maintaining the exact curve curvature and expansion dynamics from Phase 6 simulation.
 - **Token Supply**: 1,000,000,000 WIND (6 decimals) with 10% leftover reserve.
