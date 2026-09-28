@@ -33,18 +33,19 @@ interface SimulatedTrade {
   priceSol: number;
   feeQuote: number;
   poolType: 'dbc' | 'damm';
+  graduated?: boolean;
 }
 
 const PRESETS = [
   {
-    id: 'anti-sniper',
-    name: 'Anti-Sniper Fee Decay',
-    desc: '16% fee decaying over 1,000 slots. Best overall balance for organic buyers and creator fees.',
+    id: 'protect-organic',
+    name: 'Protect-Organic (Tuned)',
+    desc: '16% starting fee decaying to 1.5% over 1,000 slots, ~2.6x expansion. Tuned in Phase 6 to protect organic buyers & graduate cleanly.',
     params: {
-      initialMarketCap: 20,
-      migrationMarketCap: 400,
+      initialMarketCap: 15,
+      migrationMarketCap: 39,
       startingFeeBps: 1600,
-      endingFeeBps: 100,
+      endingFeeBps: 150,
       totalDuration: 1000,
       creatorTradingFeePercentage: 20,
     }
@@ -54,8 +55,8 @@ const PRESETS = [
     name: 'Standard Flat Curve (Vulnerable)',
     desc: 'Flat 1% fee with zero decay. Vulnerable to coordinated slot-0 Jito sniper extraction.',
     params: {
-      initialMarketCap: 20,
-      migrationMarketCap: 400,
+      initialMarketCap: 15,
+      migrationMarketCap: 39,
       startingFeeBps: 100,
       endingFeeBps: 100,
       totalDuration: 0,
@@ -68,7 +69,7 @@ const PRESETS = [
     desc: 'High slope curve with rapid migration threshold for quick liquidity migration into DAMM v2.',
     params: {
       initialMarketCap: 15,
-      migrationMarketCap: 200,
+      migrationMarketCap: 30,
       startingFeeBps: 1000,
       endingFeeBps: 50,
       totalDuration: 500,
@@ -85,15 +86,15 @@ const AGENT_MIXES = [
 ];
 
 export function Simulator() {
-  // Config state
-  const [initialMarketCap, setInitialMarketCap] = useState(20);
-  const [migrationMarketCap, setMigrationMarketCap] = useState(400);
+  // Config state - Tuned "protect-organic" preset as default
+  const [initialMarketCap, setInitialMarketCap] = useState(15);
+  const [migrationMarketCap, setMigrationMarketCap] = useState(39);
   const [startingFeeBps, setStartingFeeBps] = useState(1600);
-  const [endingFeeBps, setEndingFeeBps] = useState(100);
+  const [endingFeeBps, setEndingFeeBps] = useState(150);
   const [totalDuration, setTotalDuration] = useState(1000);
   const [creatorTradingFeePercentage, setCreatorTradingFeePercentage] = useState(20);
   const [agentMix, setAgentMix] = useState('coordinated snipers');
-  const [activePreset, setActivePreset] = useState('anti-sniper');
+  const [activePreset, setActivePreset] = useState('protect-organic');
 
   // Simulation execution state
   const [isRunning, setIsRunning] = useState(false);
@@ -218,21 +219,23 @@ export function Simulator() {
           <div className="lg:col-span-7 card-neo p-6 sm:p-8 bg-[#161B22] border-2 border-[#E6EDF3]">
             <h3 className="font-serif text-2xl font-bold mb-6 text-white flex items-center justify-between">
               <span>Launch Parameter Controls</span>
-              <span className="badge-neo bg-[#21262D] border-[#E6EDF3] text-xs font-sans text-white">Meteora DBC v1.5</span>
+              <span className="text-xs font-mono px-2.5 py-1 bg-[#21262D] text-[#14F195] border border-[#30363D] rounded-md font-bold">
+                {activePreset === 'protect-organic' ? 'Tuned Preset' : activePreset === 'custom' ? 'Custom' : 'Preset'}
+              </span>
             </h3>
 
             <div className="space-y-6">
               {/* Initial Market Cap */}
               <div>
                 <div className="flex justify-between text-sm font-semibold mb-1 text-[#E6EDF3]">
-                  <span>Initial Floor Market Cap</span>
+                  <span>Initial Market Cap (SOL)</span>
                   <span className="font-mono text-white font-bold">{initialMarketCap} SOL</span>
                 </div>
                 <input
                   type="range"
                   min="5"
                   max="100"
-                  step="5"
+                  step="1"
                   value={initialMarketCap}
                   onChange={(e) => {
                     setInitialMarketCap(Number(e.target.value));
@@ -240,20 +243,20 @@ export function Simulator() {
                   }}
                   className="w-full h-2 rounded-lg cursor-pointer bg-[#21262D]"
                 />
-                <span className="text-xs text-[#8B949E]">Starting liquidity floor (~$3,000)</span>
+                <span className="text-xs text-[#8B949E]">Starting spot price = Initial MC / Token Supply</span>
               </div>
 
               {/* Migration Market Cap */}
               <div>
                 <div className="flex justify-between text-sm font-semibold mb-1 text-[#E6EDF3]">
-                  <span>Migration Market Cap (Target)</span>
-                  <span className="font-mono text-white font-bold">{migrationMarketCap} SOL</span>
+                  <span>Migration Market Cap (SOL)</span>
+                  <span className="font-mono text-white font-bold">{migrationMarketCap} SOL ({(migrationMarketCap / initialMarketCap).toFixed(2)}x)</span>
                 </div>
                 <input
                   type="range"
-                  min="50"
-                  max="1500"
-                  step="25"
+                  min="10"
+                  max="500"
+                  step="1"
                   value={migrationMarketCap}
                   onChange={(e) => {
                     setMigrationMarketCap(Number(e.target.value));
@@ -261,20 +264,20 @@ export function Simulator() {
                   }}
                   className="w-full h-2 rounded-lg cursor-pointer bg-[#21262D]"
                 />
-                <span className="text-xs text-[#8B949E]">Threshold for DAMM v2 migration</span>
+                <span className="text-xs text-[#8B949E]">Valuation threshold triggering graduation to Meteora DAMM v2</span>
               </div>
 
-              {/* Starting Fee BPS */}
+              {/* Starting Fee (Anti-Sniper Barrier) */}
               <div>
                 <div className="flex justify-between text-sm font-semibold mb-1 text-[#E6EDF3]">
-                  <span>Starting Fee (Slot 0)</span>
-                  <span className="font-mono text-[#F4805D] font-bold">{(startingFeeBps / 100).toFixed(1)}% ({startingFeeBps} bps)</span>
+                  <span>Starting Trading Fee (Barrier)</span>
+                  <span className="font-mono text-white font-bold">{(startingFeeBps / 100).toFixed(1)}% ({startingFeeBps} bps)</span>
                 </div>
                 <input
                   type="range"
                   min="100"
-                  max="5000"
-                  step="100"
+                  max="3000"
+                  step="50"
                   value={startingFeeBps}
                   onChange={(e) => {
                     setStartingFeeBps(Number(e.target.value));
@@ -282,20 +285,20 @@ export function Simulator() {
                   }}
                   className="w-full h-2 rounded-lg cursor-pointer bg-[#21262D]"
                 />
-                <span className="text-xs text-[#8B949E]">Fee charged on slot 0 opening trades</span>
+                <span className="text-xs text-[#8B949E]">Immediate fee imposed at slot 0 to penalize MEV sniper extraction</span>
               </div>
 
-              {/* Ending Fee BPS */}
+              {/* Ending Fee Floor */}
               <div>
                 <div className="flex justify-between text-sm font-semibold mb-1 text-[#E6EDF3]">
-                  <span>Ending Floor Fee</span>
-                  <span className="font-mono text-[#14F195] font-bold">{(endingFeeBps / 100).toFixed(2)}% ({endingFeeBps} bps)</span>
+                  <span>Ending Trading Fee (Floor)</span>
+                  <span className="font-mono text-white font-bold">{(endingFeeBps / 100).toFixed(2)}% ({endingFeeBps} bps)</span>
                 </div>
                 <input
                   type="range"
-                  min="10"
+                  min="25"
                   max="500"
-                  step="10"
+                  step="25"
                   value={endingFeeBps}
                   onChange={(e) => {
                     setEndingFeeBps(Number(e.target.value));
@@ -397,7 +400,7 @@ export function Simulator() {
                     Running Monte Carlo Stress Test...
                   </span>
                 ) : (
-                  <span>Run WindTunnel Simulation →</span>
+                  <span>Run WindTunnel Simulation 🚀</span>
                 )}
               </button>
             </div>
@@ -439,7 +442,7 @@ export function Simulator() {
                   <span className={`text-xs ${
                     scorecard.sniperExtractionPct > 35 ? 'badge-neo-coral' : 'badge-neo-solana'
                   }`}>
-                    {scorecard.sniperExtractionPct > 35 ? 'High Risk' : 'Protected'}
+                    {scorecard.sniperExtractionPct > 35 ? 'Moderate Risk' : 'Protected'}
                   </span>
                 </div>
                 <div className="font-serif text-4xl sm:text-5xl font-extrabold text-white mb-1">
@@ -463,16 +466,28 @@ export function Simulator() {
                     {scorecard.organicTotalTrades} Trades
                   </span>
                 </div>
-                <div className="font-serif text-4xl sm:text-5xl font-extrabold text-[#14F195] mb-1">
+                <div className={`font-serif text-4xl sm:text-5xl font-extrabold mb-1 ${
+                  scorecard.organicAvgReturnPct !== null ? 'text-[#14F195]' : 'text-[#8B949E]'
+                }`}>
                   {scorecard.organicAvgReturnPct !== null
                     ? `+${scorecard.organicAvgReturnPct}%`
-                    : 'N/A'}
+                    : scorecard.graduated
+                    ? '0.00%'
+                    : 'Unfilled'}
                 </div>
-                <div className="text-xs text-[#8B949E] font-medium">
-                  Median return: <strong className="text-white">{scorecard.organicMedianReturnPct !== null ? `+${scorecard.organicMedianReturnPct}%` : 'N/A'}</strong>
+                <div className="text-xs font-medium">
+                  {scorecard.organicMedianReturnPct !== null ? (
+                    <span className="text-[#8B949E]">Median return: <strong className="text-white">+{scorecard.organicMedianReturnPct}%</strong></span>
+                  ) : scorecard.graduated ? (
+                    <span className="text-[#8B949E]">No organic trades executed</span>
+                  ) : (
+                    <span className="text-[#F4805D]">curve too steep for this trader mix to fill</span>
+                  )}
                 </div>
                 <p className="text-[11px] text-[#8B949E] mt-2">
-                  Average post-graduation holding return for retail & momentum buyers on DAMM v2.
+                  {scorecard.graduated
+                    ? 'Average post-graduation holding return for retail & momentum buyers on DAMM v2.'
+                    : 'Organic holding returns calculate post-graduation on DAMM v2.'}
                 </p>
               </div>
 
@@ -510,15 +525,23 @@ export function Simulator() {
                   </span>
                 </div>
                 <div className={`font-serif text-4xl sm:text-5xl font-extrabold mb-1 ${
-                  scorecard.graduated ? 'text-[#14F195]' : 'text-white'
+                  scorecard.graduated ? 'text-[#14F195]' : 'text-[#F4805D]'
                 }`}>
-                  {scorecard.ticksToGraduation !== null ? `${scorecard.ticksToGraduation} Ticks` : 'N/A'}
+                  {scorecard.graduated && scorecard.ticksToGraduation !== null
+                    ? `${scorecard.ticksToGraduation} Ticks`
+                    : 'Stalled'}
                 </div>
-                <div className="text-xs text-[#8B949E] font-medium">
-                  Estimated time: <strong className="text-white">{scorecard.estimatedWallClockSeconds !== null ? `~${scorecard.estimatedWallClockSeconds}s` : 'Did not graduate'}</strong>
+                <div className="text-xs font-medium">
+                  {scorecard.graduated && scorecard.estimatedWallClockSeconds !== null ? (
+                    <span className="text-[#8B949E]">Estimated time: <strong className="text-white">~{scorecard.estimatedWallClockSeconds}s</strong></span>
+                  ) : (
+                    <span className="text-[#F4805D]">curve too steep for this trader mix to fill</span>
+                  )}
                 </div>
                 <p className="text-[11px] text-[#8B949E] mt-2">
-                  Speed to threshold fill and automated liquidity seed into Meteora DAMM v2.
+                  {scorecard.graduated
+                    ? 'Speed to threshold fill and automated liquidity seed into Meteora DAMM v2.'
+                    : `Threshold of ${migrationMarketCap} SOL was not reached within 300 simulation ticks.`}
                 </p>
               </div>
             </div>
@@ -560,9 +583,16 @@ export function Simulator() {
             {/* Simulated Trade Execution Stream */}
             {sampleTrades.length > 0 && (
               <div className="card-neo p-6 bg-[#161B22] border-2 border-[#E6EDF3] overflow-hidden">
-                <h4 className="font-serif text-xl font-bold text-white mb-4">
-                  Simulated Trade Execution Log (First 15 Swaps)
-                </h4>
+                <div className="flex items-center justify-between mb-4">
+                  <h4 className="font-serif text-xl font-bold text-white">
+                    Simulated Trade Execution Log (First 15 Swaps)
+                  </h4>
+                  {scorecard.graduated && (
+                    <span className="badge-neo-solana text-[11px]">
+                      Graduated at Tick #{scorecard.ticksToGraduation}
+                    </span>
+                  )}
+                </div>
                 <div className="overflow-x-auto">
                   <table className="w-full text-left text-xs font-sans">
                     <thead className="bg-[#21262D] border-b-2 border-[#30363D] font-bold uppercase text-[#8B949E]">

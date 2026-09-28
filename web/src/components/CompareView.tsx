@@ -114,11 +114,17 @@ export function CompareView() {
                         Organic Avg Return
                       </div>
                       <div className={`font-serif text-3xl font-extrabold ${
-                        isWinner ? 'text-[#14F195]' : 'text-white'
+                        isWinner ? 'text-[#14F195]' : r.graduated ? 'text-white' : 'text-[#8B949E]'
                       }`}>
-                        {r.organicAvgReturnPct !== null ? `+${r.organicAvgReturnPct}%` : 'N/A'}
+                        {r.organicAvgReturnPct !== null
+                          ? `+${r.organicAvgReturnPct}%`
+                          : r.graduated
+                          ? '0.00%'
+                          : 'Unfilled'}
                       </div>
-                      <div className="text-xs text-[#8B949E]">Post-graduation holding return</div>
+                      <div className="text-xs text-[#8B949E]">
+                        {r.graduated ? 'Post-graduation holding return' : 'curve too steep for this trader mix to fill'}
+                      </div>
                     </div>
 
                     <div>
@@ -136,10 +142,15 @@ export function CompareView() {
                         Graduation Speed
                       </div>
                       <div className={`font-sans font-bold text-base mt-1 ${
-                        r.graduated ? 'text-[#14F195]' : 'text-[#8B949E]'
+                        r.graduated ? 'text-[#14F195]' : 'text-[#F4805D]'
                       }`}>
-                        {r.graduated ? `Graduated in ${r.ticksToGraduation} Ticks` : 'Did Not Graduate'}
+                        {r.graduated ? `Graduated in ${r.ticksToGraduation} Ticks` : 'Stalled'}
                       </div>
+                      {!r.graduated && (
+                        <div className="text-xs text-[#F4805D] mt-0.5">
+                          curve too steep for this trader mix to fill
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>

@@ -1,13 +1,13 @@
 import { NextResponse } from 'next/server';
-import { Keypair } from '@solana/web3.js';
 import {
   buildCurveWithMarketCap,
-  validateConfigParameters,
   getPriceFromSqrtPrice,
+  validateConfigParameters,
 } from '@meteora-ag/dynamic-bonding-curve-sdk';
+import { Keypair } from '@solana/web3.js';
 import {
+  computeScorecard,
   runScenario,
-  compute as computeScorecard,
   createAgentMix,
   measureMigrationGap,
   VirtualPoolSimulator,
@@ -18,8 +18,8 @@ export async function POST(req: Request) {
   try {
     const body = await req.json();
 
-    const initialMarketCap = Number(body.initialMarketCap ?? 20);
-    const migrationMarketCap = Number(body.migrationMarketCap ?? 40);
+    const initialMarketCap = Number(body.initialMarketCap ?? 15);
+    const migrationMarketCap = Number(body.migrationMarketCap ?? 39);
     const startingFeeBps = Number(body.startingFeeBps ?? 1600);
     const endingFeeBps = Number(body.endingFeeBps ?? 150);
     const totalDuration = Number(body.totalDuration ?? 1000);
