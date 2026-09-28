@@ -82,7 +82,7 @@ export function DevnetVerified() {
                   : 'text-[#8B949E] hover:text-white'
               }`}
             >
-              🟢 Mainnet-Beta (Live Traction)
+              Mainnet-Beta (Live Traction)
             </button>
             <button
               onClick={() => setActiveTab('devnet')}
@@ -92,7 +92,7 @@ export function DevnetVerified() {
                   : 'text-[#8B949E] hover:text-white'
               }`}
             >
-              🧪 Devnet (Math Parity)
+              Devnet (Math Parity)
             </button>
           </div>
         </div>
@@ -349,6 +349,18 @@ export function DevnetVerified() {
                     ))}
                   </tbody>
                 </table>
+              </div>
+
+              <div className="mt-4 pt-4 border-t border-[#1E3325] flex items-center justify-between text-xs text-[#8B949E] font-mono">
+                <div>
+                  <span className="text-white font-bold">Devnet Config:</span> HqzYqo...4D1oDm4
+                </div>
+                <div>
+                  <span className="text-white font-bold">Pool:</span> 2zJFqX...ZjRXBV
+                </div>
+                <div className="text-[#14F195] font-bold">
+                  Parity: 100% Bit-for-Bit Identical
+                </div>
               </div>
             </div>
           </div>

@@ -30,7 +30,7 @@ export function Hero() {
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
           <a href="#simulator" className="btn-primary text-base py-3.5 px-8 w-full sm:w-auto">
             Launch Interactive Simulator
-            <span className="font-sans font-bold">→</span>
+            <span className="font-sans font-bold"> →</span>
           </a>
           <a href="#devnet" className="btn-secondary text-base py-3.5 px-8 w-full sm:w-auto">
             View On-Chain Devnet Proof
@@ -48,7 +48,7 @@ export function Hero() {
               Sniper Token Extraction
             </div>
             <p className="text-xs text-[#8B949E] leading-normal">
-              On unprotected flat curves, coordinated MEV bundlers capture over a third of token supply in slots 0–2.
+              In the coordinated-snipers tuner baseline (20→40 SOL, seed 4242), MEV bundlers capture 38.2% of token supply in slots 0–2 (reaching up to 42.8% on flat 1% curves).
             </p>
           </div>
 
@@ -61,7 +61,7 @@ export function Hero() {
               Post-Graduation Price Impact
             </div>
             <p className="text-xs text-[#8B949E] leading-normal">
-              Migrating to full-range DAMM v2 dilutes quote liquidity, creating an immediate 67x price impact jump.
+              Across compare-demo launch curves ($1,000 buy), migrating into full-range DAMM v2 dilutes liquidity, creating an immediate 67x to 79x surge in price impact.
             </p>
           </div>
 

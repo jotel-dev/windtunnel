@@ -15,7 +15,7 @@ export async function POST(req: Request) {
     const agentMix: AgentMixPreset = body.agentMix ?? 'coordinated snipers';
     const seed = Number(body.seed ?? 4242);
 
-    // Preset Config 1: Unprotected Flat Curve (5% flat fee)
+    // Preset Config 1: Hand-Picked Baseline (5% fee decaying to 1%)
     const cfgFlat = buildCurveWithMarketCap({
       token: { tokenType: 0, tokenBaseDecimal: 6, tokenQuoteDecimal: 9, tokenAuthorityOption: 2, totalTokenSupply: 1000000000, leftover: 100000000 },
       fee: {
@@ -63,7 +63,7 @@ export async function POST(req: Request) {
       migrationMarketCap: 39,
     });
 
-    // Preset Config 3: Steep Exponential Curve (25% barrier, 2500 slots decay)
+    // Preset Config 3: Steep Exponential Curve (24% barrier, 1800 slots decay)
     const cfgSteep = buildCurveWithMarketCap({
       token: { tokenType: 0, tokenBaseDecimal: 6, tokenQuoteDecimal: 9, tokenAuthorityOption: 2, totalTokenSupply: 1000000000, leftover: 100000000 },
       fee: {
@@ -88,7 +88,7 @@ export async function POST(req: Request) {
     });
 
     const comparisonEntries = [
-      { label: 'Unprotected Flat (5% Fee)', config: cfgFlat },
+      { label: 'Hand-Picked Baseline (5% Fee)', config: cfgFlat },
       { label: 'WindTunnel Tuned Barrier (16% Fee)', config: cfgTuned },
       { label: 'High-Barrier Exponential (24% Fee)', config: cfgSteep },
     ];

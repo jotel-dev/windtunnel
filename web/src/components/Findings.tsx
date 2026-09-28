@@ -27,7 +27,7 @@ export function Findings() {
               Price Impact Jump Across Graduation
             </h4>
             <p className="text-xs text-[#8B949E] leading-relaxed">
-              A standard $1,000 buy causes 67x to 79x higher price slippage immediately post-graduation on DAMM v2 than it did immediately before graduation on DBC.
+              In compare-demo migration gap benchmarks ($1,000 order at $150 SOL/USD), buying immediately post-graduation on full-range DAMM v2 experiences 67x to 79x higher price impact than on DBC before graduation.
             </p>
           </div>
 
@@ -52,10 +52,10 @@ export function Findings() {
               +225%
             </div>
             <h4 className="font-bold text-base text-white mb-2">
-              Creator Fee Capture via Fee Decay
+              Creator Fee Capture (Tuned vs. Baseline)
             </h4>
             <p className="text-xs text-[#8B949E] leading-relaxed">
-              A 16% starting fee decaying over 1,000 slots penalizes Jito bundles without stopping organic buyers, tripling creator revenue from 0.126 SOL to 0.410 SOL.
+              In the coordinated-sniper scenario (seed 4242), the tuned 16% fee barrier taxes early Jito bundles and redirects fees to the creator, tripling creator revenue from 0.126 SOL to 0.410 SOL (+225% vs hand-picked baseline) with sniper token share shifting slightly from 38.2% to 37.2% and organic buyers achieving +93.6% return.
             </p>
           </div>
         </div>

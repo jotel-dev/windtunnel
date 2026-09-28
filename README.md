@@ -2,10 +2,10 @@
 
 > Stress-test flight simulator and config tuner for Meteora Dynamic Bonding Curves (DBC), validated bit-for-bit on Solana mainnet and devnet.
 
-[![Live Demo](https://img.shields.io/badge/Live_Demo-windtunnel--six.vercel.app-14F195?style=for-the-badge&logo=vercel)](https://windtunnel-six.vercel.app)
-[![Solana Mainnet](https://img.shields.io/badge/Solana-Mainnet--Beta%20Verified-00FFA3?style=for-the-badge&logo=solana)](https://explorer.solana.com/address/F5rMhAuXyc2qVWencT6Uc1H4DnxuJtCF6V1WJpNQ7PMV)
-[![Tests Passing](https://img.shields.io/badge/Tests-37%20Passed-brightgreen?style=for-the-badge)](https://github.com/jotel-dev/windtunnel)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)](LICENSE)
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-windtunnel--six.vercel.app-14F195?style=flat&logo=vercel)](https://windtunnel-six.vercel.app)
+[![Solana Mainnet](https://img.shields.io/badge/Solana-Mainnet%20Verified-00FFA3?style=flat&logo=solana)](https://explorer.solana.com/address/HRTdrgErgvNtBabEQjtZusdvkm7FXYipjGh8BEdRPECf)
+[![Meteora DBC](https://img.shields.io/badge/Meteora-DBC%20v1.5-F4805D?style=flat)](https://meteora.ag)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 ---
 
@@ -20,7 +20,7 @@ WindTunnel is a discrete-event market simulator and parameter optimization engin
 Launching a bonding curve token blind is dangerous. Founders typically choose bonding curve parameters—such as initial market cap, migration targets, and fee decay schedules—without empirical data on how those choices behave under adversarial pressure. 
 
 Our empirical benchmarks revealed two structural failure modes common to blind launches:
-1. **Unprotected sniper extraction**: Standard flat 1.0% fee curves allow slot-0 Jito snipers to extract over 18% of early liquidity within the first few blocks, leaving organic buyers underwater.
+1. **Unprotected sniper extraction**: Across benchmark scenarios, slot-0 Jito snipers extract **18.3% to 18.5%** of token supply under whale-heavy order flow (generating up to 96.6 SOL net profit in `scripts/compare-demo.ts`), and **38.2% to 42.8%** under coordinated sniper bundles on flat and low-fee curves (`scripts/tune-demo.ts`), capturing early tokens before organic buyers can execute.
 2. **Severe migration liquidity drop**: Moving from a discrete DBC curve into Meteora DAMM v2 (CP-AMM) full-range liquidity causes an immediate **67x to 79x surge in price impact**, exposing graduating tokens to violent post-migration dump volatility.
 
 ---
@@ -45,8 +45,8 @@ WindTunnel provides a full-stack flight simulator across four core capabilities:
 
 Through millions of simulated ticks and on-chain benchmarks, WindTunnel uncovered critical economic insights:
 
-- **67x – 79x Post-Graduation Slippage Jump**: A standard $1,000 buy order incurs **67x to 79x higher price impact** immediately after migration onto DAMM v2 compared to immediately before migration on the bonding curve. This occurs because migrated liquidity is deployed across the entire range (`MIN_SQRT_PRICE` to `MAX_SQRT_PRICE`), substantially diluting active depth near spot.
-- **Auto-Tuner Outperforms Hand-Picked Baselines (+6.28 pts)**: Running a 40-iteration two-stage evolutionary search against coordinated sniper bundles, the tuner's Generation 1 mutation refined a 16.0% fee barrier with a 1,000-slot linear decay and 20% creator split that beat baseline configurations by **+6.28 objective points**, while driving a **+225% increase in creator fee capture** (from 0.126 SOL to 0.410 SOL) without choking organic buyers.
+- **67x – 79x Post-Graduation Slippage Jump**: In migration gap benchmarks across steep, flat, and multi-segment curves (`scripts/compare-demo.ts`), a standard $1,000 buy order incurs **67x to 79x higher price impact** immediately after migration onto DAMM v2 compared to immediately before migration on the bonding curve (67.8x on flat, 70.6x on steep, 79.4x on multi-segment). This occurs because migrated liquidity is deployed across the full range (`MIN_SQRT_PRICE` to `MAX_SQRT_PRICE`), substantially diluting active depth near spot.
+- **Auto-Tuner Outperforms Hand-Picked Baseline (+6.28 pts, +225% Creator Fees)**: In a 40-iteration two-stage parameter search against the coordinated snipers scenario (`seed: 4242`), the tuner refined a 16.0% starting fee barrier with a 1,000-slot linear decay (to 1.5% floor) and 2.6x curve expansion (15 to 39 SOL). Comparing this tuned preset against the hand-picked baseline (5% decaying to 1%, 20 to 40 SOL), the tuned config improved the objective score by **+6.28 points** and drove a **+225% increase in creator fee revenue** (from 0.126 SOL to 0.410 SOL) by taxing early sniper bundles at 16%, with sniper token share changing only slightly (38.2% to 37.2%) while organic buyer returns rose from +88.8% to +93.6%.
 - **Exact-Match Devnet Validation (0 Lamport Delta)**: Across 4 consecutive devnet swaps, WindTunnel's discrete mathematical engine predicted on-chain `sqrtPrice`, base reserves, quote reserves, and 3-way fee splits with **exact 0-lamport delta** against the live Meteora DBC program.
 
 ---

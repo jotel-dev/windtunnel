@@ -50,7 +50,7 @@ export function CompareView() {
               Compare Launch Strategies
             </h2>
             <p className="text-[#8B949E] text-base sm:text-lg max-w-xl font-sans">
-              Evaluate how flat vs. fee-decay curves perform under identical sniper arrival conditions.
+              Evaluate how baseline flat vs. fee-decay curves perform under identical sniper arrival conditions.
             </p>
           </div>
 
@@ -162,7 +162,7 @@ export function CompareView() {
                       : 'bg-[#21262D] border-[#30363D] text-[#8B949E]'
                   }`}>
                     {isWinner
-                      ? '✓ Captures highest creator fees while giving organic buyers highest return.'
+                      ? '✓ Taxes slot-0 snipers, redirecting highest fees to creator while maximizing organic returns.'
                       : 'High extraction allows early bots to capture majority of initial supply.'}
                   </div>
                 </div>
