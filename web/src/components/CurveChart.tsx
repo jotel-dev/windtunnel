@@ -69,17 +69,17 @@ export function CurveChart({
   return (
     <div className="space-y-6">
       {/* Price Curve Chart */}
-      <div className="card-neo p-5 bg-[#161B22] border-2 border-[#E6EDF3]">
-        <div className="flex items-center justify-between mb-2">
+      <div className="card-neo p-4 sm:p-5 bg-[#161B22] border-2 border-[#E6EDF3]">
+        <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
           <div>
             <span className="text-xs font-bold uppercase tracking-wider text-[#8B949E]">
               Live Bonding Curve Model
             </span>
-            <h4 className="font-serif text-lg font-bold text-white">
+            <h4 className="font-serif text-base sm:text-lg font-bold text-white">
               Price vs. Curve Fill
             </h4>
           </div>
-          <div className="badge-neo-solana text-xs">
+          <div className="badge-neo-solana text-xs shrink-0">
             {(migrationMarketCap / initialMarketCap).toFixed(1)}x Expansion
           </div>
         </div>
@@ -110,13 +110,13 @@ export function CurveChart({
             </text>
 
             {/* X Axis labels */}
-            <text x={padding.left} y={padding.top + chartH + 20} textAnchor="middle" fontSize="11" fontWeight="600" fill="#8B949E">
+            <text x={padding.left} y={padding.top + chartH + 20} textAnchor="start" fontSize="11" fontWeight="600" fill="#8B949E">
               0%
             </text>
             <text x={padding.left + chartW * 0.5} y={padding.top + chartH + 20} textAnchor="middle" fontSize="11" fontWeight="600" fill="#8B949E">
               50% Fill
             </text>
-            <text x={padding.left + chartW} y={padding.top + chartH + 20} textAnchor="middle" fontSize="11" fontWeight="700" fill="#14F195">
+            <text x={padding.left + chartW} y={padding.top + chartH + 20} textAnchor="end" fontSize="11" fontWeight="700" fill="#14F195">
               100% (Graduation)
             </text>
           </svg>
@@ -129,17 +129,17 @@ export function CurveChart({
       </div>
 
       {/* Fee Scheduler Decay Chart */}
-      <div className="card-neo p-5 bg-[#161B22] border-2 border-[#E6EDF3]">
-        <div className="flex items-center justify-between mb-2">
+      <div className="card-neo p-4 sm:p-5 bg-[#161B22] border-2 border-[#E6EDF3]">
+        <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
           <div>
             <span className="text-xs font-bold uppercase tracking-wider text-[#8B949E]">
               Anti-Sniper Fee Barrier
             </span>
-            <h4 className="font-serif text-lg font-bold text-white">
+            <h4 className="font-serif text-base sm:text-lg font-bold text-white">
               Dynamic Fee Decay Schedule
             </h4>
           </div>
-          <div className="badge-neo-coral text-xs">
+          <div className="badge-neo-coral text-xs shrink-0">
             {(startingFeeBps / 100).toFixed(1)}% → {(endingFeeBps / 100).toFixed(1)}%
           </div>
         </div>
@@ -167,16 +167,16 @@ export function CurveChart({
             </text>
 
             {/* X Axis labels */}
-            <text x={padding.left} y={padding.top + chartH - 20} textAnchor="middle" fontSize="11" fontWeight="600" fill="#8B949E">
+            <text x={padding.left} y={padding.top + chartH - 20} textAnchor="start" fontSize="11" fontWeight="600" fill="#8B949E">
               Slot 0
             </text>
-            <text x={padding.left + chartW} y={padding.top + chartH - 20} textAnchor="middle" fontSize="11" fontWeight="600" fill="#8B949E">
+            <text x={padding.left + chartW} y={padding.top + chartH - 20} textAnchor="end" fontSize="11" fontWeight="600" fill="#8B949E">
               Slot {maxSlot}
             </text>
           </svg>
         </div>
 
-        <p className="text-xs text-[#8B949E] mt-1">
+        <p className="text-xs text-[#8B949E] mt-2 leading-relaxed">
           High fee during the first slots penalizes early snipers and directs 20% to creator revenue, decaying linearly to the floor fee.
         </p>
       </div>

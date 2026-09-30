@@ -173,23 +173,23 @@ export function Simulator() {
   ];
 
   return (
-    <section id="simulator" className="py-20 px-4 sm:px-6 lg:px-8 bg-[#0D1117] border-b-2 border-[#30363D]">
+    <section id="simulator" className="py-12 sm:py-20 px-4 sm:px-6 lg:px-8 bg-[#0D1117] border-b-2 border-[#30363D]">
       <div className="max-w-7xl mx-auto">
         {/* Section Header */}
-        <div className="mb-10 text-center max-w-3xl mx-auto">
+        <div className="mb-8 sm:mb-10 text-center max-w-3xl mx-auto">
           <div className="badge-neo-solana mb-3">Interactive Flight Simulator</div>
           <h2 className="text-3xl sm:text-5xl font-bold font-serif text-white mb-3">
             Simulate DBC Parameter Combinations
           </h2>
-          <p className="text-[#8B949E] text-base sm:text-lg font-sans">
+          <p className="text-[#8B949E] text-sm sm:text-base lg:text-lg font-sans">
             Adjust curve expansion caps, dynamic fee decay slopes, and agent mixes to observe sniper extraction and post-graduation price stability.
           </p>
         </div>
 
         {/* Presets Bar */}
-        <div className="card-neo p-4 mb-8 bg-[#161B22] border-2 border-[#E6EDF3] flex flex-wrap items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <span className="text-xs font-bold uppercase tracking-wider text-[#8B949E]">
+        <div className="card-neo p-4 mb-6 sm:mb-8 bg-[#161B22] border-2 border-[#E6EDF3] flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3">
+            <span className="text-xs font-bold uppercase tracking-wider text-[#8B949E] shrink-0">
               Preset Scenarios:
             </span>
             <div className="flex flex-wrap gap-2">
@@ -197,7 +197,7 @@ export function Simulator() {
                 <button
                   key={p.id}
                   onClick={() => applyPreset(p.id)}
-                  className={`px-3 py-1.5 text-xs font-semibold rounded-lg border-2 transition-all ${
+                  className={`px-3 py-2 text-xs font-semibold rounded-lg border-2 transition-all min-h-[38px] flex items-center ${
                     activePreset === p.id
                       ? 'border-[#E6EDF3] bg-[#F4805D] text-[#0D1117] font-bold shadow-[2px_2px_0_rgba(230,237,243,0.25)]'
                       : 'border-[#30363D] bg-[#21262D] hover:bg-[#30363D] text-[#E6EDF3] shadow-[2px_2px_0_rgba(230,237,243,0.15)]'
@@ -208,16 +208,16 @@ export function Simulator() {
               ))}
             </div>
           </div>
-          <div className="text-xs text-[#8B949E] font-medium">
+          <div className="text-xs text-[#8B949E] font-medium self-end sm:self-auto pt-1 sm:pt-0">
             Expansion Ratio: <strong className="text-[#14F195]">{(migrationMarketCap / initialMarketCap).toFixed(2)}x</strong>
           </div>
         </div>
 
         {/* Main Grid: Controls + Visuals */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-12">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 mb-8 sm:mb-12">
           {/* Controls Column (7 Cols) */}
-          <div className="lg:col-span-7 card-neo p-6 sm:p-8 bg-[#161B22] border-2 border-[#E6EDF3]">
-            <h3 className="font-serif text-2xl font-bold mb-6 text-white flex items-center justify-between">
+          <div className="lg:col-span-7 card-neo p-5 sm:p-7 lg:p-8 bg-[#161B22] border-2 border-[#E6EDF3]">
+            <h3 className="font-serif text-xl sm:text-2xl font-bold mb-6 text-white flex flex-wrap items-center justify-between gap-2">
               <span>Launch Parameter Controls</span>
               <span className="text-xs font-mono px-2.5 py-1 bg-[#21262D] text-[#14F195] border border-[#30363D] rounded-md font-bold">
                 {activePreset === 'protect-organic' ? 'Tuned Preset' : activePreset === 'custom' ? 'Custom' : 'Preset'}
@@ -432,20 +432,20 @@ export function Simulator() {
             </div>
 
             {/* 4 Scorecard Metrics Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
               {/* Card 1: Sniper Extraction */}
-              <div className="card-neo p-6 bg-[#161B22] border-2 border-[#E6EDF3] hover:-translate-y-1 transition-transform">
-                <div className="flex items-center justify-between mb-2">
+              <div className="card-neo p-5 sm:p-6 bg-[#161B22] border-2 border-[#E6EDF3] hover:-translate-y-1 transition-transform">
+                <div className="flex items-center justify-between gap-2 mb-2">
                   <span className="text-xs font-bold uppercase tracking-wider text-[#8B949E]">
                     Sniper Extraction
                   </span>
-                  <span className={`text-xs ${
+                  <span className={`text-xs shrink-0 ${
                     scorecard.sniperExtractionPct > 35 ? 'badge-neo-coral' : 'badge-neo-solana'
                   }`}>
                     {scorecard.sniperExtractionPct > 35 ? 'Moderate Risk' : 'Protected'}
                   </span>
                 </div>
-                <div className="font-serif text-4xl sm:text-5xl font-extrabold text-white mb-1">
+                <div className="font-serif text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white mb-1">
                   {scorecard.sniperExtractionPct}%
                 </div>
                 <div className="text-xs text-[#8B949E] font-medium">
@@ -457,16 +457,16 @@ export function Simulator() {
               </div>
 
               {/* Card 2: Organic Buyer Outcome */}
-              <div className="card-neo p-6 bg-[#161B22] border-2 border-[#E6EDF3] hover:-translate-y-1 transition-transform">
-                <div className="flex items-center justify-between mb-2">
+              <div className="card-neo p-5 sm:p-6 bg-[#161B22] border-2 border-[#E6EDF3] hover:-translate-y-1 transition-transform">
+                <div className="flex items-center justify-between gap-2 mb-2">
                   <span className="text-xs font-bold uppercase tracking-wider text-[#8B949E]">
                     Organic Avg Return
                   </span>
-                  <span className="badge-neo bg-[#21262D] border-[#E6EDF3] text-xs text-[#E6EDF3]">
+                  <span className="badge-neo bg-[#21262D] border-[#E6EDF3] text-xs text-[#E6EDF3] shrink-0">
                     {scorecard.organicTotalTrades} Trades
                   </span>
                 </div>
-                <div className={`font-serif text-4xl sm:text-5xl font-extrabold mb-1 ${
+                <div className={`font-serif text-3xl sm:text-4xl lg:text-5xl font-extrabold mb-1 ${
                   scorecard.organicAvgReturnPct !== null ? 'text-[#14F195]' : 'text-[#8B949E]'
                 }`}>
                   {scorecard.organicAvgReturnPct !== null
@@ -492,16 +492,16 @@ export function Simulator() {
               </div>
 
               {/* Card 3: Creator Revenue */}
-              <div className="card-neo p-6 bg-[#161B22] border-2 border-[#E6EDF3] hover:-translate-y-1 transition-transform">
-                <div className="flex items-center justify-between mb-2">
+              <div className="card-neo p-5 sm:p-6 bg-[#161B22] border-2 border-[#E6EDF3] hover:-translate-y-1 transition-transform">
+                <div className="flex items-center justify-between gap-2 mb-2">
                   <span className="text-xs font-bold uppercase tracking-wider text-[#8B949E]">
                     Creator Revenue
                   </span>
-                  <span className="badge-neo-coral text-xs">
+                  <span className="badge-neo-coral text-xs shrink-0">
                     {creatorTradingFeePercentage}% Split
                   </span>
                 </div>
-                <div className="font-serif text-4xl sm:text-5xl font-extrabold text-white mb-1">
+                <div className="font-serif text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white mb-1">
                   {scorecard.creatorFeesQuote.toFixed(3)} SOL
                 </div>
                 <div className="text-xs text-[#8B949E] font-medium">
@@ -513,18 +513,18 @@ export function Simulator() {
               </div>
 
               {/* Card 4: Graduation Status */}
-              <div className="card-neo p-6 bg-[#161B22] border-2 border-[#E6EDF3] hover:-translate-y-1 transition-transform">
-                <div className="flex items-center justify-between mb-2">
+              <div className="card-neo p-5 sm:p-6 bg-[#161B22] border-2 border-[#E6EDF3] hover:-translate-y-1 transition-transform">
+                <div className="flex items-center justify-between gap-2 mb-2">
                   <span className="text-xs font-bold uppercase tracking-wider text-[#8B949E]">
                     Graduation Status
                   </span>
-                  <span className={`text-xs ${
+                  <span className={`text-xs shrink-0 ${
                     scorecard.graduated ? 'badge-neo-solana' : 'badge-neo-coral'
                   }`}>
                     {scorecard.graduated ? 'Migrated' : 'Stalled'}
                   </span>
                 </div>
-                <div className={`font-serif text-4xl sm:text-5xl font-extrabold mb-1 ${
+                <div className={`font-serif text-3xl sm:text-4xl lg:text-5xl font-extrabold mb-1 ${
                   scorecard.graduated ? 'text-[#14F195]' : 'text-[#F4805D]'
                 }`}>
                   {scorecard.graduated && scorecard.ticksToGraduation !== null
@@ -548,29 +548,29 @@ export function Simulator() {
 
             {/* Migration Gap Analysis Banner */}
             {scorecard.migrationGap && (
-              <div className="card-neo p-6 bg-[#1A2332] border-2 border-[#E6EDF3]">
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+              <div className="card-neo p-5 sm:p-6 bg-[#1A2332] border-2 border-[#E6EDF3]">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-5 sm:gap-6">
                   <div>
                     <div className="badge-neo bg-[#21262D] border-[#E6EDF3] text-white mb-2">Phase 3 Migration Continuity</div>
-                    <h4 className="font-serif text-xl font-bold text-white">
+                    <h4 className="font-serif text-lg sm:text-xl font-bold text-white">
                       DBC → DAMM v2 Liquidity Transition Gap
                     </h4>
                     <p className="text-xs text-[#8B949E] max-w-2xl mt-1">
                       Due to full-range concentrated liquidity distribution on DAMM v2, post-graduation depth thins substantially compared to the discrete DBC segments.
                     </p>
                   </div>
-                  <div className="flex items-center gap-6">
-                    <div className="text-center">
+                  <div className="flex items-center justify-start sm:justify-end gap-5 sm:gap-6 pt-2 sm:pt-0 border-t sm:border-t-0 border-[#30363D]">
+                    <div className="text-left sm:text-center">
                       <div className="text-xs text-[#8B949E] font-bold uppercase">Price Gap</div>
-                      <div className="font-serif text-2xl font-black text-white">
+                      <div className="font-serif text-xl sm:text-2xl font-black text-white">
                         {scorecard.migrationGap.priceGapBps} bps
                       </div>
                       <div className="text-[11px] text-[#8B949E]">({(scorecard.migrationGap.priceGapBps / 100).toFixed(2)}%)</div>
                     </div>
                     <div className="h-10 w-[2px] bg-[#30363D]" />
-                    <div className="text-center">
+                    <div className="text-left sm:text-center">
                       <div className="text-xs text-[#8B949E] font-bold uppercase">Impact Jump</div>
-                      <div className="font-serif text-2xl font-black text-white">
+                      <div className="font-serif text-xl sm:text-2xl font-black text-white">
                         {scorecard.migrationGap.impactRatio}x
                       </div>
                       <div className="text-[11px] text-[#8B949E]">On $1,000 Buy</div>
@@ -582,19 +582,24 @@ export function Simulator() {
 
             {/* Simulated Trade Execution Stream */}
             {sampleTrades.length > 0 && (
-              <div className="card-neo p-6 bg-[#161B22] border-2 border-[#E6EDF3] overflow-hidden">
-                <div className="flex items-center justify-between mb-4">
-                  <h4 className="font-serif text-xl font-bold text-white">
-                    Simulated Trade Execution Log (First 15 Swaps)
-                  </h4>
+              <div className="card-neo p-4 sm:p-6 bg-[#161B22] border-2 border-[#E6EDF3] overflow-hidden">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+                  <div>
+                    <h4 className="font-serif text-lg sm:text-xl font-bold text-white">
+                      Simulated Trade Execution Log (First 15 Swaps)
+                    </h4>
+                    <span className="text-[11px] text-[#8B949E] sm:hidden">
+                      ← Scroll horizontally to inspect trades →
+                    </span>
+                  </div>
                   {scorecard.graduated && (
-                    <span className="badge-neo-solana text-[11px]">
+                    <span className="badge-neo-solana text-[11px] self-start sm:self-auto">
                       Graduated at Tick #{scorecard.ticksToGraduation}
                     </span>
                   )}
                 </div>
-                <div className="overflow-x-auto">
-                  <table className="w-full text-left text-xs font-sans">
+                <div className="overflow-x-auto table-scroll-container rounded-lg border border-[#30363D]">
+                  <table className="w-full text-left text-xs font-sans min-w-[580px]">
                     <thead className="bg-[#21262D] border-b-2 border-[#30363D] font-bold uppercase text-[#8B949E]">
                       <tr>
                         <th className="p-3">Tick / Slot</th>
@@ -609,21 +614,21 @@ export function Simulator() {
                     <tbody className="divide-y divide-[#30363D]">
                       {sampleTrades.slice(0, 15).map((t, idx) => (
                         <tr key={idx} className="hover:bg-[#21262D]/60 font-mono">
-                          <td className="p-3 font-semibold text-white">#{t.tick} (Slot {t.slot})</td>
-                          <td className="p-3 font-sans font-medium text-white">{t.agentName}</td>
-                          <td className="p-3 font-sans">
+                          <td className="p-3 font-semibold text-white whitespace-nowrap">#{t.tick} (Slot {t.slot})</td>
+                          <td className="p-3 font-sans font-medium text-white whitespace-nowrap">{t.agentName}</td>
+                          <td className="p-3 font-sans whitespace-nowrap">
                             <span className="badge-neo bg-[#21262D] border-[#30363D] py-0.5 px-2 text-[10px] text-[#E6EDF3]">
                               {t.agentType}
                             </span>
                           </td>
-                          <td className="p-3 font-bold">
+                          <td className="p-3 font-bold whitespace-nowrap">
                             <span className={t.side === 'buy' ? 'text-[#14F195]' : 'text-[#F4805D]'}>
                               {t.side.toUpperCase()}
                             </span>
                           </td>
-                          <td className="p-3 text-white font-semibold">{t.amountSol.toFixed(4)} SOL</td>
-                          <td className="p-3 text-[#8B949E]">{t.priceSol.toExponential(4)}</td>
-                          <td className="p-3 font-sans">
+                          <td className="p-3 text-white font-semibold whitespace-nowrap">{t.amountSol.toFixed(4)} SOL</td>
+                          <td className="p-3 text-[#8B949E] whitespace-nowrap">{t.priceSol.toExponential(4)}</td>
+                          <td className="p-3 font-sans whitespace-nowrap">
                             <span className={`badge-neo py-0.5 px-2 text-[10px] ${
                               t.poolType === 'dbc' ? 'bg-[#21262D] text-[#38BDF8] border-[#38BDF8]/40' : 'bg-[#14231B] text-[#14F195] border-[#14F195]/40'
                             }`}>

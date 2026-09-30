@@ -50,140 +50,201 @@ h1, h2, h3, .font-display {
   letter-spacing: -0.02em;
 }
 
-/* Hard outline cards */
-.card-neo {
-  background-color: #161B22;
-  border: 2px solid #E6EDF3;
-  box-shadow: 4px 4px 0 rgba(230, 237, 243, 0.2);
-  border-radius: 14px;
+@layer components {
+  /* Hard outline cards */
+  .card-neo {
+    background-color: #161B22;
+    border: 2px solid #E6EDF3;
+    box-shadow: 4px 4px 0 rgba(230, 237, 243, 0.2);
+    border-radius: 14px;
+  }
+
+  .card-neo-sm {
+    background-color: #161B22;
+    border: 2px solid #E6EDF3;
+    box-shadow: 2px 2px 0 rgba(230, 237, 243, 0.2);
+    border-radius: 10px;
+  }
+
+  .card-neo-lg {
+    background-color: #161B22;
+    border: 2px solid #E6EDF3;
+    box-shadow: 6px 6px 0 rgba(230, 237, 243, 0.25);
+    border-radius: 16px;
+  }
+
+  /* Card in Solana green verified section */
+  .card-neo-green {
+    background-color: #14231B;
+    border: 2px solid #14F195;
+    box-shadow: 4px 4px 0 rgba(20, 241, 149, 0.25);
+    border-radius: 14px;
+  }
+
+  /* Primary Coral Button */
+  .btn-primary {
+    background-color: #F4805D;
+    border: 2px solid #E6EDF3;
+    color: #0D1117;
+    box-shadow: 4px 4px 0 rgba(230, 237, 243, 0.25);
+    font-weight: 700;
+    border-radius: 12px;
+    padding: 0.625rem 1.25rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+    cursor: pointer;
+    user-select: none;
+  }
+  .btn-primary:hover:not(:disabled) {
+    transform: translate(-1px, -1px);
+    box-shadow: 5px 5px 0 rgba(230, 237, 243, 0.35);
+    background-color: #F69273;
+  }
+  .btn-primary:active:not(:disabled) {
+    transform: translate(2px, 2px);
+    box-shadow: 2px 2px 0 rgba(230, 237, 243, 0.2);
+  }
+  .btn-primary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  /* Secondary Button */
+  .btn-secondary {
+    background-color: #161B22;
+    border: 2px solid #E6EDF3;
+    color: #E6EDF3;
+    font-weight: 600;
+    border-radius: 12px;
+    padding: 0.625rem 1.25rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    transition: all 0.15s ease-in-out;
+    cursor: pointer;
+    user-select: none;
+  }
+  .btn-secondary:hover:not(:disabled) {
+    background-color: #21262D;
+    transform: translate(-1px, -1px);
+    box-shadow: 3px 3px 0 rgba(230, 237, 243, 0.2);
+  }
+  .btn-secondary:active:not(:disabled) {
+    transform: translate(1px, 1px);
+    box-shadow: 1px 1px 0 rgba(230, 237, 243, 0.2);
+  }
+
+  /* Badge Pills */
+  .badge-neo {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    border: 1.5px solid #E6EDF3;
+    border-radius: 9999px;
+    padding: 0.25rem 0.75rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    background-color: #21262D;
+    color: #E6EDF3;
+  }
+
+  .badge-neo-solana {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    border: 1.5px solid #14F195;
+    border-radius: 9999px;
+    padding: 0.25rem 0.75rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    background-color: rgba(20, 241, 149, 0.12);
+    color: #14F195;
+  }
+
+  .badge-neo-coral {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    border: 1.5px solid #F4805D;
+    border-radius: 9999px;
+    padding: 0.25rem 0.75rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    background-color: rgba(244, 128, 93, 0.15);
+    color: #F4805D;
+  }
 }
 
-.card-neo-sm {
-  background-color: #161B22;
-  border: 2px solid #E6EDF3;
-  box-shadow: 2px 2px 0 rgba(230, 237, 243, 0.2);
-  border-radius: 10px;
-}
-
-.card-neo-lg {
-  background-color: #161B22;
-  border: 2px solid #E6EDF3;
-  box-shadow: 6px 6px 0 rgba(230, 237, 243, 0.25);
-  border-radius: 16px;
-}
-
-/* Card in Solana green verified section */
-.card-neo-green {
-  background-color: #14231B;
-  border: 2px solid #14F195;
-  box-shadow: 4px 4px 0 rgba(20, 241, 149, 0.25);
-  border-radius: 14px;
-}
-
-/* Primary Coral Button */
-.btn-primary {
-  background-color: #F4805D;
-  border: 2px solid #E6EDF3;
-  color: #0D1117;
-  box-shadow: 4px 4px 0 rgba(230, 237, 243, 0.25);
-  font-weight: 700;
-  border-radius: 12px;
-  padding: 0.625rem 1.25rem;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
-  cursor: pointer;
-  user-select: none;
-}
-.btn-primary:hover:not(:disabled) {
-  transform: translate(-1px, -1px);
-  box-shadow: 5px 5px 0 rgba(230, 237, 243, 0.35);
-  background-color: #F69273;
-}
-.btn-primary:active:not(:disabled) {
-  transform: translate(2px, 2px);
-  box-shadow: 2px 2px 0 rgba(230, 237, 243, 0.2);
-}
-.btn-primary:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-/* Secondary Button */
-.btn-secondary {
-  background-color: #161B22;
-  border: 2px solid #E6EDF3;
-  color: #E6EDF3;
-  font-weight: 600;
-  border-radius: 12px;
-  padding: 0.625rem 1.25rem;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  transition: all 0.15s ease-in-out;
-  cursor: pointer;
-  user-select: none;
-}
-.btn-secondary:hover:not(:disabled) {
-  background-color: #21262D;
-  transform: translate(-1px, -1px);
-  box-shadow: 3px 3px 0 rgba(230, 237, 243, 0.2);
-}
-.btn-secondary:active:not(:disabled) {
-  transform: translate(1px, 1px);
-  box-shadow: 1px 1px 0 rgba(230, 237, 243, 0.2);
-}
-
-/* Badge Pills */
-.badge-neo {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.375rem;
-  border: 1.5px solid #E6EDF3;
-  border-radius: 9999px;
-  padding: 0.25rem 0.75rem;
-  font-size: 0.75rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  background-color: #21262D;
-  color: #E6EDF3;
-}
-
-.badge-neo-solana {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.375rem;
-  border: 1.5px solid #14F195;
-  border-radius: 9999px;
-  padding: 0.25rem 0.75rem;
-  font-size: 0.75rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  background-color: rgba(20, 241, 149, 0.12);
-  color: #14F195;
-}
-
-.badge-neo-coral {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.375rem;
-  border: 1.5px solid #F4805D;
-  border-radius: 9999px;
-  padding: 0.25rem 0.75rem;
-  font-size: 0.75rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  background-color: rgba(244, 128, 93, 0.15);
-  color: #F4805D;
-}
-
-/* Range input accent styling */
+/* Range input accent styling & touch enhancements */
 input[type="range"] {
   accent-color: #14F195;
+  touch-action: manipulation;
+  height: 1.75rem;
+  padding: 0;
+  margin: 0;
+  background: transparent;
+  cursor: pointer;
 }
+
+input[type="range"]::-webkit-slider-thumb {
+  height: 22px;
+  width: 22px;
+  border-radius: 9999px;
+  background: #14F195;
+  border: 2px solid #0D1117;
+  box-shadow: 0 0 0 2px #14F195, 2px 2px 0 rgba(230, 237, 243, 0.3);
+  cursor: pointer;
+  -webkit-appearance: none;
+  margin-top: -7px;
+}
+
+input[type="range"]::-moz-range-thumb {
+  height: 22px;
+  width: 22px;
+  border-radius: 9999px;
+  background: #14F195;
+  border: 2px solid #0D1117;
+  box-shadow: 0 0 0 2px #14F195, 2px 2px 0 rgba(230, 237, 243, 0.3);
+  cursor: pointer;
+}
+
+/* Touch action optimization to eliminate tap delay on mobile */
+button, a, input, select {
+  touch-action: manipulation;
+}
+
+/* Smooth momentum scrolling for responsive overflow containers */
+.table-scroll-container {
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: #30363D #161B22;
+}
+
+.table-scroll-container::-webkit-scrollbar {
+  height: 6px;
+}
+
+.table-scroll-container::-webkit-scrollbar-track {
+  background: #161B22;
+  border-radius: 4px;
+}
+
+.table-scroll-container::-webkit-scrollbar-thumb {
+  background: #30363D;
+  border-radius: 4px;
+}
+
+.table-scroll-container::-webkit-scrollbar-thumb:hover {
+  background: #8B949E;
+}
+

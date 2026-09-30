@@ -41,25 +41,25 @@ export function CompareView() {
   }, [agentMix]);
 
   return (
-    <section id="compare" className="py-20 px-4 sm:px-6 lg:px-8 bg-[#131A26] border-b-2 border-[#30363D]">
+    <section id="compare" className="py-12 sm:py-20 px-4 sm:px-6 lg:px-8 bg-[#131A26] border-b-2 border-[#30363D]">
       <div className="max-w-7xl mx-auto">
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 sm:gap-6 mb-8 sm:mb-12">
           <div>
             <div className="badge-neo bg-[#21262D] border-[#E6EDF3] text-white mb-3">Head-to-Head Benchmark</div>
             <h2 className="text-3xl sm:text-5xl font-bold font-serif text-white mb-3">
               Compare Launch Strategies
             </h2>
-            <p className="text-[#8B949E] text-base sm:text-lg max-w-xl font-sans">
+            <p className="text-[#8B949E] text-sm sm:text-base lg:text-lg max-w-xl font-sans">
               Evaluate how baseline flat vs. fee-decay curves perform under identical sniper arrival conditions.
             </p>
           </div>
 
-          <div className="flex items-center gap-2">
-            <span className="text-xs font-bold uppercase text-[#8B949E]">Trader Flow:</span>
+          <div className="flex items-center gap-2 self-start sm:self-auto">
+            <span className="text-xs font-bold uppercase text-[#8B949E] shrink-0">Trader Flow:</span>
             <select
               value={agentMix}
               onChange={(e) => setAgentMix(e.target.value)}
-              className="card-neo-sm px-3 py-2 text-xs font-bold bg-[#161B22] text-white border-2 border-[#E6EDF3] cursor-pointer"
+              className="card-neo-sm px-3 py-2 text-xs sm:text-sm font-bold bg-[#161B22] text-white border-2 border-[#E6EDF3] cursor-pointer min-h-[44px]"
             >
               <option value="coordinated snipers">Coordinated Snipers</option>
               <option value="light retail">Light Retail</option>
@@ -70,29 +70,29 @@ export function CompareView() {
         </div>
 
         {/* Comparison Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
           {results.map((r, i) => {
             const isWinner = r.label.includes('Tuned');
             return (
               <div
                 key={i}
-                className={`p-6 sm:p-8 flex flex-col justify-between transition-all rounded-[14px] ${
+                className={`p-5 sm:p-7 lg:p-8 flex flex-col justify-between transition-all rounded-[14px] ${
                   isWinner
-                    ? 'bg-[#14231B] border-2 border-[#14F195] shadow-[6px_6px_0_rgba(20,241,149,0.3)] relative'
+                    ? 'bg-[#14231B] border-2 border-[#14F195] shadow-[6px_6px_0_rgba(20,241,149,0.3)] relative mt-4 md:mt-0'
                     : 'card-neo bg-[#161B22] border-2 border-[#E6EDF3]'
                 }`}
               >
                 <div>
                   {isWinner && (
-                    <div className="absolute -top-3.5 right-6 badge-neo-solana bg-[#14F195] text-[#0D1117] font-extrabold border-2 border-[#E6EDF3]">
+                    <div className="absolute -top-3.5 right-4 sm:right-6 badge-neo-solana bg-[#14F195] text-[#0D1117] font-extrabold border-2 border-[#E6EDF3] py-0.5 px-2.5 text-xs">
                       Recommended ★
                     </div>
                   )}
 
-                  <h3 className="font-serif text-xl sm:text-2xl font-bold text-white mb-2">
+                  <h3 className="font-serif text-lg sm:text-xl lg:text-2xl font-bold text-white mb-1.5 sm:mb-2">
                     {r.label}
                   </h3>
-                  <div className="text-xs text-[#8B949E] mb-6">
+                  <div className="text-xs text-[#8B949E] mb-5 sm:mb-6">
                     {isWinner ? 'Optimized anti-sniper fee schedule' : 'Standard baseline curve setup'}
                   </div>
 
@@ -101,7 +101,7 @@ export function CompareView() {
                       <div className="text-xs font-bold text-[#8B949E] uppercase tracking-wider">
                         Sniper Extraction
                       </div>
-                      <div className="font-serif text-3xl font-extrabold text-white">
+                      <div className="font-serif text-2xl sm:text-3xl font-extrabold text-white">
                         {r.sniperExtractionPct}%
                       </div>
                       <div className="text-xs text-[#8B949E]">
@@ -113,7 +113,7 @@ export function CompareView() {
                       <div className="text-xs font-bold text-[#8B949E] uppercase tracking-wider">
                         Organic Avg Return
                       </div>
-                      <div className={`font-serif text-3xl font-extrabold ${
+                      <div className={`font-serif text-2xl sm:text-3xl font-extrabold ${
                         isWinner ? 'text-[#14F195]' : r.graduated ? 'text-white' : 'text-[#8B949E]'
                       }`}>
                         {r.organicAvgReturnPct !== null
@@ -131,7 +131,7 @@ export function CompareView() {
                       <div className="text-xs font-bold text-[#8B949E] uppercase tracking-wider">
                         Creator Fees Earned
                       </div>
-                      <div className="font-serif text-3xl font-extrabold text-white">
+                      <div className="font-serif text-2xl sm:text-3xl font-extrabold text-white">
                         {r.creatorFeesQuote.toFixed(3)} SOL
                       </div>
                       <div className="text-xs text-[#8B949E]">Direct creator fee revenue</div>
@@ -141,7 +141,7 @@ export function CompareView() {
                       <div className="text-xs font-bold text-[#8B949E] uppercase tracking-wider">
                         Graduation Speed
                       </div>
-                      <div className={`font-sans font-bold text-base mt-1 ${
+                      <div className={`font-sans font-bold text-sm sm:text-base mt-1 ${
                         r.graduated ? 'text-[#14F195]' : 'text-[#F4805D]'
                       }`}>
                         {r.graduated ? `Graduated in ${r.ticksToGraduation} Ticks` : 'Stalled'}
@@ -155,8 +155,8 @@ export function CompareView() {
                   </div>
                 </div>
 
-                <div className="pt-6 mt-6 border-t border-[#30363D]">
-                  <div className={`text-xs p-3 rounded-lg border font-medium ${
+                <div className="pt-5 sm:pt-6 mt-5 sm:mt-6 border-t border-[#30363D]">
+                  <div className={`text-xs p-3 rounded-lg border font-medium leading-relaxed ${
                     isWinner
                       ? 'bg-[rgba(20,241,149,0.12)] border-[#14F195]/40 text-[#14F195]'
                       : 'bg-[#21262D] border-[#30363D] text-[#8B949E]'
