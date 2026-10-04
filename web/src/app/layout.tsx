@@ -25,6 +25,14 @@ export const metadata: Metadata = {
   title: "WindTunnel | Stress-Test Your Meteora DBC Token Launch",
   description: "Interactive simulation and economic stress-test engine for Meteora Dynamic Bonding Curves. Protect organic buyers, calculate sniper extraction, and verify DAMM v2 migration.",
   keywords: ["Meteora", "DBC", "Solana", "Dynamic Bonding Curve", "DAMM v2", "Crypto Simulation", "Jito MEV"],
+  icons: {
+    icon: [
+      { url: '/icon.png', type: 'image/png' },
+      { url: '/windtunnel_mark_square.png', type: 'image/png' },
+    ],
+    shortcut: '/favicon.ico',
+    apple: '/icon.png',
+  },
 };
 
 export default function RootLayout({

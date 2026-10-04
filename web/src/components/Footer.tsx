@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Image from 'next/image';
 
 export function Footer() {
   return (
@@ -9,10 +10,14 @@ export function Footer() {
         {/* Brand & Subtitle */}
         <div className="flex flex-col sm:flex-row items-center gap-2.5 sm:gap-3 text-center sm:text-left">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-[#F4805D] border-2 border-[#E6EDF3] flex items-center justify-center font-serif font-black text-base text-[#0D1117] shadow-[2px_2px_0_rgba(230,237,243,0.25)] shrink-0">
-              W
-            </div>
-            <span className="font-serif text-xl font-bold tracking-tight text-white">WindTunnel</span>
+            <Image
+              src="/windtunnel_mark.png"
+              alt="WindTunnel Logo"
+              width={71}
+              height={24}
+              className="h-6 sm:h-7 w-auto object-contain shrink-0"
+            />
+            <span className="font-serif text-xl font-bold tracking-tight text-white whitespace-nowrap">WindTunnel</span>
           </div>
           <span className="text-xs text-[#8B949E] font-medium">
             Meteora DBC Flight Simulator &amp; Stress Engine

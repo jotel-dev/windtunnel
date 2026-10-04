@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import Image from 'next/image';
 
 export function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -20,10 +21,15 @@ export function Navbar() {
     <header className="sticky top-0 z-50 bg-[#0D1117]/95 border-b-2 border-[#30363D] backdrop-blur-sm">
       <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between gap-2">
         {/* Brand Logo & Title */}
-        <a href="#" className="flex items-center gap-2 sm:gap-3 group shrink-0">
-          <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-[#F4805D] border-2 border-[#E6EDF3] flex items-center justify-center font-serif font-black text-base sm:text-xl text-[#0D1117] shadow-[2px_2px_0_rgba(230,237,243,0.25)] shrink-0">
-            W
-          </div>
+        <a href="#" className="flex items-center gap-2 sm:gap-2.5 group shrink-0">
+          <Image
+            src="/windtunnel_mark.png"
+            alt="WindTunnel Logo"
+            width={106}
+            height={36}
+            className="h-7 sm:h-9 w-auto object-contain shrink-0"
+            priority
+          />
           <div>
             <div className="flex items-center gap-1.5 sm:gap-2">
               <span className="font-serif text-lg sm:text-2xl font-bold tracking-tight text-white group-hover:text-[#14F195] transition-colors">
