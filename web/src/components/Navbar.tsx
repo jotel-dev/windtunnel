@@ -20,29 +20,24 @@ export function Navbar() {
   return (
     <header className="sticky top-0 z-50 bg-[#0D1117]/95 border-b-2 border-[#30363D] backdrop-blur-sm">
       <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between gap-2">
-        {/* Brand Logo & Title */}
-        <a href="#" className="flex items-center gap-2 sm:gap-2.5 group shrink-0">
+        {/* Brand Logo & Wordmark */}
+        <a href="#" className="flex items-center gap-2 sm:gap-3 group shrink-0" aria-label="WindTunnel Home">
           <Image
             src="/windtunnel_mark.png"
-            alt="WindTunnel Logo"
+            alt="WindTunnel Mark"
             width={106}
             height={36}
-            className="h-7 sm:h-9 w-auto object-contain shrink-0"
+            className="h-6 sm:h-8 md:h-9 w-auto object-contain shrink-0"
             priority
           />
-          <div>
-            <div className="flex items-center gap-1.5 sm:gap-2">
-              <span className="font-serif text-lg sm:text-2xl font-bold tracking-tight text-white group-hover:text-[#14F195] transition-colors">
-                WindTunnel
-              </span>
-              <span className="badge-neo-solana text-[10px] sm:text-[11px] py-0.5 px-1.5 sm:px-2">
-                v0.1
-              </span>
-            </div>
-            <span className="text-[11px] sm:text-xs text-[#8B949E] font-medium hidden sm:inline-block">
-              Meteora DBC Flight Simulator
-            </span>
-          </div>
+          <Image
+            src="/windtunnel_wordmark_text.png"
+            alt="WindTunnel"
+            width={221}
+            height={24}
+            className="h-3.5 sm:h-5 md:h-5.5 lg:h-6 w-auto object-contain shrink-0"
+            priority
+          />
         </a>
 
         {/* Desktop Navigation Links */}
