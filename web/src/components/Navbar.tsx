@@ -20,22 +20,14 @@ export function Navbar() {
   return (
     <header className="sticky top-0 z-50 bg-[#0D1117]/95 border-b-2 border-[#30363D] backdrop-blur-sm">
       <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between gap-2">
-        {/* Brand Logo & Wordmark */}
-        <a href="#" className="flex items-center gap-2 sm:gap-3 group shrink-0" aria-label="WindTunnel Home">
+        {/* Brand Logo (Mark + Wordmark Stacked) */}
+        <a href="#" className="flex items-center group shrink-0 py-1" aria-label="WindTunnel Home">
           <Image
-            src="/windtunnel_mark.png"
-            alt="WindTunnel Mark"
-            width={106}
-            height={36}
-            className="h-6 sm:h-8 md:h-9 w-auto object-contain shrink-0"
-            priority
-          />
-          <Image
-            src="/windtunnel_wordmark_text.png"
+            src="/windtunnel_logo_full_transparent.png"
             alt="WindTunnel"
-            width={221}
-            height={24}
-            className="h-3.5 sm:h-5 md:h-5.5 lg:h-6 w-auto object-contain shrink-0"
+            width={146}
+            height={64}
+            className="h-11 sm:h-14 md:h-16 w-auto object-contain shrink-0"
             priority
           />
         </a>
